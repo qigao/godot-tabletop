@@ -9,6 +9,7 @@ checks = [
     ("import", ["--editor", "--import"]),
     ("rules", ["--script", "res://tests/run.gd"]),
     ("legal actions", ["--script", "res://tests/legal_actions.gd"]),
+    ("client engine", ["--script", "res://tests/client.gd"]),
     ("ui", ["--script", "res://tests/smoke.gd"]),
 ]
 for name, arguments in checks:

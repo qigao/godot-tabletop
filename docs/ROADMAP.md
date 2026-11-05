@@ -1,37 +1,53 @@
 # Roadmap
 
-## M0: Offline foundation
+## Current priority: Godot 4 local client engine
 
-- [x] Godot 4.6 project and pinned MIT Card Framework dependency.
-- [x] Scene-independent per-match state, commands, observations, and replay.
-- [x] DouDiZhu bidding, combinations, turn/trick resolution, outcome, and scoring.
-- [x] Playable local three-seat hotseat view using the actual addon.
-- [x] Rule acceptance, 32 full-match JSON replays, isolation, board-contract fixture, UI smoke.
-- [x] Linux/Windows/macOS CI accepted at implementation HEAD `752324901b3cf7534b803918647738741f298b27`: [run 41965189933](https://github.com/qigao/godot-tabletop/actions/runs/41965189933), each with 4,137 rule checks and zero UI smoke failures.
-- [ ] Manual rendered UI, mouse, resize, and touch acceptance on target devices.
+The user requested completion of the reusable local client before remote rooms or AI. The project uses Godot 4.6-stable as its pinned 4.x baseline. Track the client milestone in [#7](https://github.com/qigao/godot-tabletop/issues/7), the concrete board integration in [#5](https://github.com/qigao/godot-tabletop/issues/5), and physical device/distribution acceptance in [#2](https://github.com/qigao/godot-tabletop/issues/2).
 
-## M1: DouDiZhu rules and inference acceptance ([#3](https://github.com/qigao/godot-tabletop/issues/3))
+- [x] Independent rules/session authority, observations, revision checks and deterministic replay.
+- [x] DouDiZhu local hotseat with bidding, 14 combination types, outcomes and scoring.
+- [x] Complete rank-distinct legal actions and a legal-play selection browser.
+- [x] Module descriptors pair rules adapters and views; the client host has no game-specific branches.
+- [x] Multi-table workspace: create, switch, restart, pause, close and independent progress.
+- [x] Common undo/redo, replay seek and history branching.
+- [x] File-picker save/load, full archive validation and new-table replay import.
+- [x] Monotonic UI tokens reject stale/detached commands after lifecycle changes.
+- [x] Per-view card managers/input scopes, generic card metadata, separate board/piece widget.
+- [x] Playable 15 × 15 freestyle Gomoku using the same module/session/client contracts.
+- [x] Rule, workspace, scene, simulated mouse/touch/key, resize and lifecycle acceptance.
+- [x] Real local OpenGL layout captures at 1280 × 800 and 800 × 600.
+- [x] Runnable development client packaging with PCK scene acceptance; three-platform CI publishes bundles.
+- [ ] Physical target-device input/DPI acceptance; signed production distribution, web/mobile exports (#2).
 
-- [x] Run 96 complete seeded mixed-combination matches with all 14 kinds actually played, card conservation, and JSON replay.
-- [x] Enumerate all rank-distinct legal actions for the current profile, including bounded wings, response filtering, bidding and pass; validate small hands by exhaustive physical subsets through the command validator.
-- [x] Verify action rank mapping against 935 outputs from pinned DouZero, with six named profile exclusions; test stable IDs and revision-checked action dispatch.
-- [x] Add a UI browser that cycles legal plays without executing them.
-- [ ] Construct and independently validate full DouZero observations/model features and whole-environment compatibility.
-- [ ] Define HTTP/2 and WebSocket inference messages with game/rules identity, seat observation, revision, and action IDs.
-- [ ] Integrate separately deployed trained inference; reject stale or illegal responses through the same authority.
-- [ ] Keep a held-out evaluation set and report actual strength only after complete real matches.
+The exact implementation commit and three-platform CI result are recorded in the pull request and tracking issue. Automation verifies event routing and actual scene rendering; it does not establish physical touchscreen behavior.
 
-## M2: Online rooms and distribution ([#4](https://github.com/qigao/godot-tabletop/issues/4))
+## Accepted rule/action evidence
 
-- [ ] Server authority with connection-bound seats and separate private observations.
-- [ ] Reconnect, command deduplication, replay publication after the hand, and timeout/disconnect policies.
-- [ ] Multi-table presentation ownership; eliminate cross-table interaction through addon static state.
-- [ ] Desktop/web exports and real device input acceptance, with downloadable build artifacts.
+- 32 complete seeded single/pass DouDiZhu matches.
+- 96 complete seeded mixed-combination matches, with all 14 kinds actually played and JSON replay.
+- Bounded exhaustive subset comparisons for the legal action generator.
+- 935 pinned upstream action outputs, six explicit rule-profile exclusions, stable IDs and revision-checked dispatch.
+- Gomoku horizontal/vertical/diagonal and edge wins, overline behavior, no row wrapping, a full 225-move draw, and JSON replay.
 
-## M3: Board-game extension ([#5](https://github.com/qigao/godot-tabletop/issues/5))
+These are deterministic acceptance drivers. They do not implement a production opponent or prove trained-agent strength.
 
-- [ ] Ship a first board-game module (freestyle Gomoku as the initial reference) through the common catalog/session/replay interface.
-- [ ] Separate piece/grid rendering from card rendering.
-- [ ] Add move, turn, outcome, replay, and simultaneous independent-session acceptance.
+## Additional games
 
-Chess/Xiangqi and additional card games should get their own rules and profile tests. They must not inherit DouDiZhu-specific fields or card-container ownership.
+Chess/Xiangqi and further card games get their own rules/profile and view adapters through the current descriptor contract. A chess move is an engine-specific command, not a new host code path. Each game needs its own real outcome/replay/interaction acceptance.
+
+## Deferred: trained inference ([#3](https://github.com/qigao/godot-tabletop/issues/3))
+
+- Construct and independently validate full DouZero observations/model features and whole-environment compatibility.
+- Define HTTP/2/WebSocket messages with game/rules identity, seat observation, revision, and legal actions.
+- Integrate separately deployed trained inference and reject stale/illegal responses through authority.
+- Evaluate complete real matches using held-out data before claiming model strength.
+
+The existing action codec and oracle fixtures stay as rule acceptance; no new model or transport work is part of the client milestone.
+
+## Deferred: server-authoritative rooms ([#4](https://github.com/qigao/godot-tabletop/issues/4))
+
+- Connection-bound seats, server authority and separate private observations.
+- Reconnect, command deduplication, post-hand replay publication and timeout/disconnect policies.
+- Remote room lifecycle and concurrency acceptance.
+
+Local table lifecycle and desktop development bundles belong to the current client milestone, independently of this future transport work.

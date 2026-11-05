@@ -9,3 +9,4 @@ extends RefCounted
 @abstract func apply(state: Dictionary, seat: int, command: Dictionary) -> Dictionary
 @abstract func observe(state: Dictionary, seat: int) -> Dictionary
 @abstract func legal_actions(state: Dictionary, seat: int) -> Array[Dictionary]
+@abstract func active_seat(state: Dictionary) -> int

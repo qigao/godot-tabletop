@@ -35,6 +35,9 @@ func observe(seat: int) -> Dictionary:
 func legal_actions(seat: int) -> Array[Dictionary]:
 	return rules.legal_actions(_state, seat)
 
+func active_seat() -> int:
+	return rules.active_seat(_state)
+
 func submit_action(seat: int, action_id: String, expected_revision: int) -> Dictionary:
 	if expected_revision != revision:
 		return {"ok": false, "error": "stale_revision"}
@@ -54,12 +57,25 @@ func export_replay() -> Dictionary:
 	}
 
 static func from_replay(game_rules: TabletopRules, replay: Dictionary) -> Dictionary:
+	for key in ["schema", "game_id", "rules_revision", "seed", "commands"]:
+		if not replay.has(key):
+			return {"ok": false, "error": "invalid_replay_format"}
+	if not _is_integer(replay.schema) or not replay.game_id is String \
+			or not replay.rules_revision is String or not _is_integer(replay.seed) \
+			or replay.seed < 0 or replay.seed > 0xffffffff or not replay.commands is Array:
+		return {"ok": false, "error": "invalid_replay_format"}
 	if replay.schema != 1 or replay.game_id != game_rules.game_id() \
 			or replay.rules_revision != game_rules.rules_revision():
 		return {"ok": false, "error": "replay_version_mismatch"}
 	var session := TabletopSession.new(game_rules, int(replay.seed))
 	for entry in replay.commands:
+		if not entry is Dictionary or not entry.has("seat") or not entry.has("command") \
+				or not _is_integer(entry.seat) or entry.seat < 0 or not entry.command is Dictionary:
+			return {"ok": false, "error": "invalid_replay_entry", "index": session.revision}
 		var result := session.submit(int(entry.seat), entry.command, session.revision)
 		if not result.ok:
 			return {"ok": false, "error": "invalid_replay_command", "index": session.revision}
 	return {"ok": true, "session": session}
+
+static func _is_integer(value: Variant) -> bool:
+	return typeof(value) in [TYPE_INT, TYPE_FLOAT] and value == int(value)

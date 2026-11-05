@@ -1,46 +1,61 @@
 # Architecture
 
-## Boundaries
+## Local client first
 
-The reusable layer is a per-match command authority. It must work for card games, piece-placement games, and chess-style move games without depending on any particular scene hierarchy.
+The current deliverable is a Godot 4 client engine for local card and board games. Remote room authority and model inference are deferred. DouDiZhu and Gomoku are the concrete integrations; the grid fixture only tests the lower-level rules contract.
 
-`TabletopRules` defines six operations: game identity, rules revision, initial state, command application, seat-specific observation, and legal-action enumeration. A rules module uses value data only. It returns a new state and public events for a successful command, or a rule error without changing its input state.
+| Layer | Owns | Does not decide |
+| --- | --- | --- |
+| `TabletopRules` | Game profile, deterministic transition, observation, legal actions, active seat | Scene layout, animations or table lifecycle |
+| `TabletopSession` | One authoritative state, command revision, accepted log | Which Godot view is mounted |
+| `TabletopLocalTable` | One session, full command timeline, review cursor, pause, UI frame token | Card or board-specific commands |
+| `TabletopWorkspace` | Independent tables, active table, creation/switch/close, validated replay import | Rules or rendering for an individual game |
+| `TabletopGameModule` | Identity, seat count, rules script, view scene | A global live match |
+| `TabletopGameView` | Observation rendering and command requests | Authoritative state mutation |
+| `tabletop_app.gd` | Tabs, toolbar, history slider, dialogs, mounting the registered view | Game-specific state fields or move types |
 
-`TabletopSession` owns one state, seed, revision, and accepted-command log. `submit(seat, command, expected_revision)` rejects stale revisions before asking the rules to apply the command. Successful submission commits once, increments revision, and then emits events. The returned result contains events, not the authoritative state. Each match gets a distinct session; no autoload singleton owns matches.
+## Rules and authority
 
-`legal_actions(seat)` returns module-defined `{id, command}` entries for the acting seat. `submit_action(seat, id, expected_revision)` checks the revision before resolving the ID, then submits the resolved command through the same validator. Unknown, unavailable, or stale actions do not advance the match. The grid fixture supplies `place:<cell>` actions through this interface; the common core has no card-specific fields.
+`TabletopRules` defines game identity, rules revision, initial state, command application, seat-specific observation, legal-action enumeration, and active seat. Its value data must be replayable without a scene tree. Application returns a new state plus events, or an explicit rule error without changing the input state.
 
-DouDiZhu enumerates one action per rank multiset and selects the lowest owned physical card IDs as its representative. Equivalent suits retain the same action ID. The production generator constructs pattern families and bounded wing selections; the exponential physical-subset scan exists only in acceptance tests. IDs are scoped by the match and revision; future network/inference messages must include that context.
+`TabletopSession.submit(seat, command, expected_revision)` rejects stale revisions before applying a command. Success commits once, advances the revision, records a detached command, and emits public events. Each match owns a different session. No autoload singleton owns live state.
 
-The Godot view submits commands and reads observations. Animation never decides ownership, whose turn it is, or whether a play is legal. The card addon handles presentation. Its visual movement history is not the game replay and is not used for game undo.
+`legal_actions(seat)` returns `{id, command}` entries. `submit_action(seat, id, expected_revision)` resolves an available ID through the same validator. Unknown, unavailable, or stale actions leave the match unchanged. DouDiZhu uses rank-multiset IDs and canonical owned physical cards; Gomoku uses `place:<cell>`. Other engines may define commands such as `{type: "move", from: 12, to: 28}` without changing the client host.
 
-## Adding a game
+Observations contain only what that seat may see. The current local host presents the active seat's observation. It does not implement simultaneous remote players, spectators, or authenticated seats.
 
-1. Add a `TabletopRules` implementation under `games/<id>/`.
-2. Give its rule profile a concrete revision; unsupported replay revisions fail rather than silently adopting changed rules.
-3. Register its rules in `TabletopCatalog` and provide a view adapter.
-4. Test command legality, rejected-command atomicity, observations, outcome, and JSON replay.
+## History and stale input
 
-`tests/fixtures/grid_rules.gd` proves that board-cell commands and two-player turns run through the same session/replay code without a hand, deck, landlord, or Godot node.
+A local table keeps the complete accepted timeline and a review cursor. Seeking reconstructs a fresh session from the seed and the chosen command prefix, through the same replay validator. It retains future commands for redo. A successful new command truncates the future at the cursor and appends the new branch; rejection preserves both state and timeline.
 
-The current product UI renders one DouDiZhu table. Rule-session isolation is tested; simultaneous multi-table UI interaction is not yet accepted. Upstream static hover counters are a presentation constraint to address before that milestone.
+A session revision can repeat after undo and restart. Therefore the client uses a separate monotonically increasing frame token, scoped to a never-reused table ID. Moves, seeks, resets, pauses, and table switches invalidate old tokens. The view requests a command with the token of the frame it rendered; the workspace also checks that the table still exists and is active. Queued commands from detached views cannot affect a restored or newer match.
 
-## Replay and hidden information
+Pause blocks gameplay commands and displays an overlay. Review and common lifecycle controls remain available. Closing a table destroys its workspace ownership; other tables retain their exact state.
 
-Replay schema 1 contains game ID, rules revision, initial seed, and ordered accepted commands. The deck uses fixed integer operations rather than an engine-version-dependent RNG. JSON decoding is accepted for integral numeric card IDs and bids; fractional values are rejected.
+## Presentation and input
 
-Replay is a privileged match archive: its seed reconstructs every private hand. It is not a player observation or a multiplayer message. During bidding, observations hide other hands, the bottom cards, and the seed. After bidding, only the bottom cards become public. Full authoritative snapshots exist for local authority/testing, not client transport.
+A module descriptor pairs the rules adapter with a `TabletopGameView` scene. The catalog registers descriptors. The host always mounts through this contract and does not branch on game identity.
 
-## DouZero and networking direction
+The card integration extends the pinned Card Framework outside its source tree. Each rendered card table owns an explicit manager and `TabletopInputScope`; it does not register a manager in root-scene metadata. The local hover scope chooses the hovered card, while adapter cleanup balances upstream static counters. Two live card views are exercised together and destroying one leaves the other's scope intact. Visual drag/drop cannot transfer cards around the rules authority.
 
-The first UI is hotseat and includes no production bot. The complete-match test driver is only an acceptance tool.
+The reusable card factory takes arbitrary string keys and display metadata. DouDiZhu rank/suit conversion belongs to its view, not the shared factory, card or hand. The board widget renders a configurable intersection grid, piece colors/text, focus, last-move and line highlights; its activated cell is interpreted by the game view. A game can supply a different widget while retaining the same view contract.
 
-The next AI adapter should use a separately hosted DouZero inference service over HTTP/2 or WebSocket. It receives the acting seat's observation and legal-action representation. A returned action still passes through `submit` with the expected revision. Training and inference implementation do not belong in card nodes.
+Native touch events activate custom cards/boards once. Emulated mouse events remain enabled for ordinary Godot toolbar controls; custom widgets ignore that duplicate mouse path. Keyboard focus and common client shortcuts coexist. Layout uses containers and a scrollable game slot with a 640 × 480 minimum desktop window.
 
-The current DouZero codec handles action ranks and pass only, and resolves decoded outputs against the supplied legal-action set. It does not construct the full model observation/features, send network requests, or run a trained model. See `DOUZERO_ACTIONS.md` for pinned oracle evidence and rule-profile differences.
+## Replay boundary
 
-Online rooms will own the authoritative session on the server, derive the seat from the authenticated connection, and distribute separate observations per player. A peer must not choose its own seat or receive the live seed/archive. Reconnect should use observation plus revision; command deduplication and stale inference cancellation require their own acceptance before claiming online support.
+Schema 1 stores game ID, rules revision, seed, and ordered accepted commands. The deterministic deck uses fixed integer operations. Unsupported identity/revisions, malformed fields, invalid turns and illegal commands reject the archive. A loaded replay is completely validated before a new table is attached; existing tables are never replaced by partially loaded data.
+
+Saving while reviewing writes the full timeline, including redo commands. Loading opens at the end. The review cursor, local pause state, tab order and UI selection are not match replay data.
+
+Archives are privileged: a seed reconstructs every private hand. They are not multiplayer messages. During DouDiZhu bidding, the normal observation hides other hands, bottom cards and seed; after bidding only the bottom becomes public. Authoritative snapshots exist for local authority/tests.
+
+## Future integrations
+
+The existing action codec and committed oracle fixtures cover action ranks only. They do not construct full model features, run a trained model, or send requests. Inference and server-authoritative rooms remain separate deferred milestones [#3](https://github.com/qigao/godot-tabletop/issues/3) and [#4](https://github.com/qigao/godot-tabletop/issues/4).
+
+Any later remote/model result must still pass the current rules validator with the correct match and revision. It must not become a card-node responsibility. The local client work does not imply that transport, reconnect, seat authentication, or model strength has been accepted.
 
 ## Development rules
 
-Fail on broken invariants. Reject invalid player commands as explicit domain errors. Do not add silent fallbacks, historical API/ABI compatibility, installer tests, or consumer-package probes. Download external CI files with `curl`; use the standard GDScript engine without Mono.
+Fail on broken invariants. Reject invalid player commands and external archives as explicit domain errors. Do not add silent fallbacks, historical API/ABI compatibility, installer tests, or consumer-package probes. External CI files use `curl`; the standard GDScript engine requires no Mono.
