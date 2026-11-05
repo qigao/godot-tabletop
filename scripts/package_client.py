@@ -25,6 +25,7 @@ run(["--headless", "--path", str(project), "--export-pack", "Client pack", str(p
 # Execute the real client scenes from PCK, without the source project's resources.
 run(["--headless", "--main-pack", str(pack), "--script", str(project / "tests/smoke.gd")])
 run(["--headless", "--main-pack", str(pack), "--script", str(project / "tests/interaction.gd")])
+run(["--headless", "--main-pack", str(pack), "--script", str(project / "tests/interruptions.gd")])
 
 with tempfile.TemporaryDirectory(prefix="tabletop-client-") as directory:
     stage = Path(directory)

@@ -12,6 +12,7 @@ checks = [
     ("client engine", ["--script", "res://tests/client.gd"]),
     ("configured presentation", ["--script", "res://tests/presentation.gd"]),
     ("interaction UX", ["--script", "res://tests/interaction.gd"]),
+    ("client interruptions", ["--script", "res://tests/interruptions.gd"]),
     ("ui", ["--script", "res://tests/smoke.gd"]),
 ]
 for name, arguments in checks:

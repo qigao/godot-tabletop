@@ -77,6 +77,10 @@ func set_paused(id: int, value: bool) -> void:
 	_tables[id].set_paused(value)
 	changed.emit()
 
+func interrupt_table(id: int) -> void:
+	_tables[id].invalidate_frame("interrupt")
+	changed.emit()
+
 func export_replay(id: int) -> Dictionary:
 	return _tables[id].export_replay()
 

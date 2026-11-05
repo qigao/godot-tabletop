@@ -29,6 +29,8 @@ func _ready() -> void:
 func present(frame: Dictionary) -> void:
 	_suspended = frame.paused
 	_players.music.stream_paused = _suspended
+	if _suspended:
+		_stop_foreground()
 	if not muted and not _suspended:
 		if frame.transition in ["created", "reset", "review", "import", "switch"]:
 			_ensure_music(media.background_music, media.music_volume_db)

@@ -44,6 +44,7 @@ The user requires the conventional reference workflow, with variations customiza
 - [x] Pattern/low-card callouts, separate voice/warning/effect streams, looping music and configured music changes.
 - [x] Settlement with actual scores, new-round/close controls and stale callback rejection.
 - [x] Actual viewport scenarios and native motion/layout capture; packaged scene and interaction acceptance.
+- [x] Modal/window/application suspension with stale-lease rejection, retained clock/pause state, frozen replay saves and motion-enabled input checks ([#13](https://github.com/qigao/godot-tabletop/issues/13)).
 
 Exact implementation/three-platform evidence is recorded in #11 and its PR. Physical device/audio acceptance remains #2. The inspected reference itself uses click selection; sweep/drop are additional configurable modes. See INTERACTION.md for source mapping and evidence boundaries.
 

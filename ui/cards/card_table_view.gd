@@ -202,7 +202,7 @@ func render(observation: Dictionary, legal: Array[Dictionary]) -> void:
 	var old_positions: Dictionary = {}
 	for card in hand.cards_node.get_children():
 		old_positions[card.card_name] = card.global_position
-	if new_token:
+	if new_token or blocked:
 		feedback.text = ""
 		_cancel_motion()
 		hand.cancel_pointer()
@@ -289,6 +289,7 @@ func render(observation: Dictionary, legal: Array[Dictionary]) -> void:
 	_last_token = frame_token
 	_visible_seat = active
 	_selection_changed(hand.selected_keys)
+	clock.suspended = busy or blocked or settlement.visible
 
 func _layout_hand() -> void:
 	hand.max_hand_spread = minf(layout.max_hand_spread, maxf(0, manager.size.x - manager.card_size.x - 32))
@@ -535,7 +536,7 @@ func _update_clock(legal: Array[Dictionary]) -> void:
 				clock.total = layout.clock_seconds
 				clock.running = false
 	clock.visible = layout.clock_seconds > 0 and not legal.is_empty() and not settlement.visible
-	if layout.clock_seconds <= 0 or legal.is_empty() or blocked or settlement.visible:
+	if layout.clock_seconds <= 0 or legal.is_empty() or client_frame.paused or settlement.visible:
 		clock.running = false
 	clock.queue_redraw()
 

@@ -30,6 +30,8 @@ Card interaction is part of client acceptance. The DouDiZhu example now includes
 
 **Motion on/off**, **Skip motion**, pointer thresholds, seat anchors, timing and event/media mappings are configurable. Rule-complete play is only one part of acceptance. See [the reference behavior mapping and interaction checks](docs/INTERACTION.md).
 
+File dialogs and window/application focus loss suspend input, countdown and music without changing user pause or replay history. Interruption cancels old gestures/callbacks; returning focus resumes the remaining time. Saved replays use the snapshot selected when the dialog opened.
+
 ![Actual client interaction capture](docs/images/client-interactions.gif)
 
 ## Run
