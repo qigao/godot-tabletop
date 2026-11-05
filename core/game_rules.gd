@@ -8,3 +8,4 @@ extends RefCounted
 @abstract func initial_state(seed_value: int) -> Dictionary
 @abstract func apply(state: Dictionary, seat: int, command: Dictionary) -> Dictionary
 @abstract func observe(state: Dictionary, seat: int) -> Dictionary
+@abstract func legal_actions(state: Dictionary, seat: int) -> Array[Dictionary]

@@ -22,6 +22,16 @@ func _run() -> void:
 	app._on_bid(3)
 	await process_frame
 	_check(app.hand.get_card_count() == 20, "Landlord hand rendered")
+	var before: Dictionary = app.session.authoritative_snapshot()
+	app._on_cycle()
+	_check(not app.hand.selected_ids.is_empty() and not app.play_button.disabled, "Cycle selects a real legal play")
+	_check(app.session.authoritative_snapshot() == before, "Cycling actions cannot advance match")
+	app._on_play()
+	await process_frame
+	_check(app.session.revision == 2, "Cycled play passes the authoritative validator")
+	app._new_game()
+	app._on_bid(3)
+	await process_frame
 	var card: Card = app.hand.cards_node.get_child(0)
 	card._handle_mouse_pressed()
 	_check(app.hand.selected_ids.size() == 1, "Card selection uses addon callback")

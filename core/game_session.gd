@@ -32,6 +32,17 @@ func observe(seat: int) -> Dictionary:
 	view["revision"] = revision
 	return view
 
+func legal_actions(seat: int) -> Array[Dictionary]:
+	return rules.legal_actions(_state, seat)
+
+func submit_action(seat: int, action_id: String, expected_revision: int) -> Dictionary:
+	if expected_revision != revision:
+		return {"ok": false, "error": "stale_revision"}
+	for action in legal_actions(seat):
+		if action.id == action_id:
+			return submit(seat, action.command, expected_revision)
+	return {"ok": false, "error": "unknown_legal_action"}
+
 func authoritative_snapshot() -> Dictionary:
 	return _state.duplicate(true)
 

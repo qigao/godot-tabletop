@@ -24,3 +24,11 @@ func apply(state: Dictionary, seat: int, command: Dictionary) -> Dictionary:
 
 func observe(state: Dictionary, _seat: int) -> Dictionary:
 	return state.duplicate(true)
+
+func legal_actions(state: Dictionary, seat: int) -> Array[Dictionary]:
+	var actions: Array[Dictionary] = []
+	if seat == state.turn:
+		for cell in range(9):
+			if state.cells[cell] == -1:
+				actions.append({"id": "place:%d" % cell, "command": {"type": "place", "cell": cell}})
+	return actions

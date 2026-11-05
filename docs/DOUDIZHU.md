@@ -36,4 +36,6 @@ When the landlord wins, scores are `+2m` for the landlord and `-m` per farmer. W
 
 ## Validation boundaries
 
-Tests cover all named combination types, negative boundaries, bids, passes, privacy, scoring fixtures, and complete replay. The 32 full-match acceptance runs use single-card plays and passes. End-to-end mixed-combination agent play, DouZero legal-action mapping, regional profiles, and external rule-oracle comparison remain separate milestones.
+Tests cover all named combination types, negative boundaries, bids, passes, privacy, scoring fixtures, and complete replay. The original 32 full-match runs use single-card plays and passes. A further 96 seeded matches select from the enumerator, actually play all 14 kinds, conserve cards after every action, and reproduce their final states through JSON replay.
+
+Small-hand exhaustive physical-subset scans compare the constructive action list against the actual command validator, including all response families and rocket. A separate fixture contains 935 outputs from a pinned DouZero generator; the expected difference is exactly six named profile exclusions. These bounded checks do not establish equivalence for every possible hand or for complete model features. Regional profiles, full observation/model encoding, trained inference, and strength evaluation remain separate milestones.

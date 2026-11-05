@@ -20,6 +20,9 @@ var seats: Array[Label] = []
 var bid_buttons: Array[Button] = []
 var play_button: Button
 var pass_button: Button
+var cycle_button: Button
+var legal_plays: Array[Dictionary] = []
+var _cycle_index := 0
 
 func _ready() -> void:
 	_build_ui()
@@ -114,13 +117,14 @@ func _build_ui() -> void:
 		bid_buttons.append(_button(controls, "No bid" if bid == 0 else "Bid %d" % bid, _on_bid.bind(bid)))
 	play_button = _button(controls, "Play selected", _on_play)
 	pass_button = _button(controls, "Pass", _on_pass)
+	cycle_button = _button(controls, "Next legal play", _on_cycle)
 	selection_label = _label("", 14)
 	selection_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	controls.add_child(selection_label)
 	status_label = _label("", 15)
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(status_label)
-	column.add_child(_label("M0  /  Offline rules and replay  /  S Spades · H Hearts · C Clubs · D Diamonds · SJ/BJ Jokers", 12))
+	column.add_child(_label("LOCAL TABLE  /  Reproducible rounds  /  S Spades · H Hearts · C Clubs · D Diamonds · SJ/BJ Jokers", 12))
 
 func _label(text: String, font_size: int) -> Label:
 	var label := Label.new()
@@ -171,6 +175,13 @@ func _refresh() -> void:
 	play_button.visible = view.phase == "playing"
 	pass_button.visible = view.phase == "playing"
 	pass_button.disabled = view.last_pattern.is_empty()
+	cycle_button.visible = view.phase == "playing"
+	legal_plays.clear()
+	for action in session.legal_actions(view.turn):
+		if action.command.type == "play":
+			legal_plays.append(action)
+	_cycle_index = 0
+	cycle_button.disabled = legal_plays.is_empty()
 	hand.selected_ids.clear()
 	hand.clear_cards()
 	for id in view.hands[view.turn]:
@@ -180,9 +191,18 @@ func _refresh() -> void:
 func _selection_changed(ids: Array[int]) -> void:
 	var pattern := Patterns.classify(ids)
 	selection_label.text = "%d selected" % ids.size()
+	selection_label.text += " / %d legal plays" % legal_plays.size()
 	if not pattern.is_empty():
 		selection_label.text += " · " + pattern.kind.replace("_", " ")
-	play_button.disabled = pattern.is_empty()
+	play_button.disabled = not Patterns.beats(pattern, session.observe(-1).last_pattern)
+
+func _on_cycle() -> void:
+	var action: Dictionary = legal_plays[_cycle_index % legal_plays.size()]
+	_cycle_index += 1
+	hand.selected_ids.assign(action.command.cards)
+	for card in hand.cards_node.get_children():
+		(card as TabletopPlayingCard).selected = hand.selected_ids.has(int(card.card_info.id))
+	hand.selection_changed.emit(hand.selected_ids.duplicate())
 
 func _on_bid(value: int) -> void:
 	_submit({"type": "bid", "value": value})
