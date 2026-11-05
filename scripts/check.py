@@ -8,6 +8,7 @@ godot = str(Path(sys.argv[1]).resolve())
 checks = [
     ("import", ["--editor", "--import"]),
     ("rules", ["--script", "res://tests/run.gd"]),
+    ("legal actions", ["--script", "res://tests/legal_actions.gd"]),
     ("ui", ["--script", "res://tests/smoke.gd"]),
 ]
 for name, arguments in checks:

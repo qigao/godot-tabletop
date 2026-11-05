@@ -15,3 +15,10 @@
 - [blmz/GODOT-DouDiZhu](https://github.com/blmz/GODOT-DouDiZhu), reviewed at `58e8daa59efb38a4afa1d6de2da5752469f5a019`: first-game workflow reference. **No code, artwork, sound, scenes, or fonts imported.** No license file was supplied in the reviewed repository snapshot.
 
 DouDiZhu rules, the session/replay layer, presentation adapter, and tests in this repository are original implementations. The M0 card faces use Godot drawing and the engine's built-in font.
+
+## External action oracle
+
+- [kwai/DouZero](https://github.com/kwai/DouZero), commit `718a5c920bf3361e34178a38f3b80458e176b351`, Apache-2.0: used outside the shipped runtime to generate numeric legal-action fixtures.
+- `tests/fixtures/douzero_actions.json` records the upstream commit and SHA-256 hashes of `douzero/env/utils.py` and `move_generator.py`, along with 10 synthetic hands and 935 generated rank actions. No upstream Python source, model weights, or training data is bundled.
+- `scripts/update_douzero_oracle.py` verifies the two pinned source hashes and regenerates the fixture from an explicitly supplied checkout/archive. Ordinary checks use the committed fixture and do not download or install DouZero.
+- The six expected profile exclusions are recorded explicitly, rather than hidden by filtering upstream results through this project's classifier. See `docs/DOUZERO_ACTIONS.md`.

@@ -3,6 +3,7 @@ extends TabletopRules
 
 const Cards = preload("res://games/doudizhu/cards.gd")
 const Patterns = preload("res://games/doudizhu/patterns.gd")
+const Actions = preload("res://games/doudizhu/actions.gd")
 
 func game_id() -> String:
 	return "doudizhu"
@@ -153,6 +154,20 @@ func observe(state: Dictionary, seat: int) -> Dictionary:
 	if state.phase == "bidding":
 		view.bottom = []
 	return view
+
+func legal_actions(state: Dictionary, seat: int) -> Array[Dictionary]:
+	var actions: Array[Dictionary] = []
+	if seat != state.turn or state.phase == "finished":
+		return actions
+	if state.phase == "bidding":
+		for value in range(4):
+			if value == 0 or value > state.highest_bid:
+				actions.append({"id": "bid:%d" % value, "command": {"type": "bid", "value": value}})
+		return actions
+	actions = Actions.enumerate(state.hands[seat], state.last_pattern)
+	if not state.last_pattern.is_empty():
+		actions.append({"id": "pass", "command": {"type": "pass"}})
+	return actions
 
 func _reject(error: String) -> Dictionary:
 	return {"ok": false, "error": error}

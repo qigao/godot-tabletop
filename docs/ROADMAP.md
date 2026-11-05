@@ -12,8 +12,11 @@
 
 ## M1: DouDiZhu rules and inference acceptance ([#3](https://github.com/qigao/godot-tabletop/issues/3))
 
-- [ ] Independently validate mixed-combination full games, especially airplane wings and four-with-two variants.
-- [ ] Implement complete legal-action enumeration and verify action/observation mapping against DouZero.
+- [x] Run 96 complete seeded mixed-combination matches with all 14 kinds actually played, card conservation, and JSON replay.
+- [x] Enumerate all rank-distinct legal actions for the current profile, including bounded wings, response filtering, bidding and pass; validate small hands by exhaustive physical subsets through the command validator.
+- [x] Verify action rank mapping against 935 outputs from pinned DouZero, with six named profile exclusions; test stable IDs and revision-checked action dispatch.
+- [x] Add a UI browser that cycles legal plays without executing them.
+- [ ] Construct and independently validate full DouZero observations/model features and whole-environment compatibility.
 - [ ] Define HTTP/2 and WebSocket inference messages with game/rules identity, seat observation, revision, and action IDs.
 - [ ] Integrate separately deployed trained inference; reject stale or illegal responses through the same authority.
 - [ ] Keep a held-out evaluation set and report actual strength only after complete real matches.
