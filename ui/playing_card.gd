@@ -2,59 +2,90 @@ class_name TabletopPlayingCard
 extends Card
 
 var input_scope: TabletopInputScope
-
 var selected := false:
 	set(value):
 		selected = value
 		queue_redraw()
+var _pose_tween: Tween
 
 func _ready() -> void:
 	super._ready()
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	focus_mode = Control.FOCUS_ALL
-	focus_entered.connect(func() -> void: change_state(DraggableState.HOVERING))
-	focus_exited.connect(func() -> void: change_state(DraggableState.IDLE))
+	focus_entered.connect(func() -> void: change_state(DraggableState.HOVERING); queue_redraw())
+	focus_exited.connect(func() -> void: change_state(DraggableState.IDLE); queue_redraw())
 
 func _draw() -> void:
-	var shape := StyleBoxFlat.new()
-	shape.bg_color = Color("fffaf0")
-	shape.border_color = Color("f7c66b") if selected else Color("cad1da")
-	shape.set_border_width_all(4 if selected else 1)
-	shape.set_corner_radius_all(9)
-	draw_style_box(shape, Rect2(Vector2.ZERO, card_size))
-	if card_info.face_texture != null:
-		draw_texture_rect(card_info.face_texture, Rect2(Vector2.ZERO, card_size), false)
-		shape.bg_color = Color.TRANSPARENT
-		draw_style_box(shape, Rect2(Vector2.ZERO, card_size))
-	if card_info.artwork != null:
-		draw_texture_rect(card_info.artwork, Rect2(Vector2(8, 55), card_size - Vector2(16, 65)), false)
-	var ink: Color = card_info.ink
-	var font := ThemeDB.fallback_font
-	draw_string(font, Vector2(7, 25), card_info.title, HORIZONTAL_ALIGNMENT_LEFT, -1, 19, ink)
-	draw_string(font, Vector2(7, 48), card_info.symbol, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, ink)
-	if selected:
-		draw_circle(Vector2(card_size.x - 13, 14), 5, Color("d49a37"))
-
-func _handle_mouse_pressed() -> void:
-	card_container.on_card_pressed(self)
+	TabletopCardFace.draw(self, Rect2(Vector2.ZERO, card_size), card_info, selected, has_focus())
 
 func _on_gui_input(event: InputEvent) -> void:
 	if not can_be_interacted_with:
 		return
-	# Buttons use emulated mouse input; cards handle the original touch once.
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
-	if event is InputEventScreenTouch and event.pressed:
-		card_container.on_card_pressed(self)
+	var hand := card_container as TabletopSelectionHand
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			if hand.interaction.clear_with_right_click:
+				hand.clear_selection()
+			accept_event()
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				hand.begin_pointer(self, get_global_transform_with_canvas() * event.position, -2)
+			else:
+				hand.end_pointer(get_global_transform_with_canvas() * event.position, -2)
+			accept_event()
+	elif event is InputEventScreenTouch:
+		if event.canceled:
+			hand.cancel_pointer()
+		elif event.pressed:
+			hand.begin_pointer(self, get_global_transform_with_canvas() * event.position, event.index)
+		else:
+			hand.end_pointer(get_global_transform_with_canvas() * event.position, event.index)
 		accept_event()
 	elif event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode in [KEY_ENTER, KEY_SPACE]:
-			card_container.on_card_pressed(self)
-			accept_event()
-		elif event.keycode in [KEY_LEFT, KEY_RIGHT]:
-			card_container.focus_neighbour(self, -1 if event.keycode == KEY_LEFT else 1)
-			accept_event()
-	else:
-		super._on_gui_input(event)
+		if event.ctrl_pressed or event.meta_pressed or event.alt_pressed:
+			return
+		match event.keycode:
+			KEY_ENTER, KEY_SPACE: hand.on_card_pressed(self)
+			KEY_LEFT, KEY_RIGHT:
+				hand.focus_neighbour(self, -1 if event.keycode == KEY_LEFT else 1, event.shift_pressed)
+			KEY_ESCAPE: hand.clear_selection()
+			_: return
+		accept_event()
+
+func move(target: Vector2, degree: float) -> void:
+	# Presentation motion does not put cards into the addon's unclickable MOVING state.
+	# This keeps fast clicks, range selection and hover expansion responsive.
+	if _pose_tween != null:
+		_pose_tween.kill()
+	original_destination = target
+	original_rotation = degree
+	var hand := card_container as TabletopSelectionHand
+	var hovered := input_scope.hovered == self
+	z_index = stored_z_index + (100 if hovered else (30 if selected else 0))
+	var target_scale := Vector2.ONE * (hand.interaction.hover_scale if hovered else 1.0)
+	var seconds := 0.0 if hand.reduced_motion else hand.interaction.move_seconds
+	if seconds == 0:
+		global_position = target
+		rotation = degree
+		scale = target_scale
+		return
+	_pose_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_pose_tween.tween_property(self, "global_position", target, seconds)
+	_pose_tween.tween_property(self, "rotation", degree, seconds)
+	_pose_tween.tween_property(self, "scale", target_scale, seconds)
+
+func snap_to(point: Vector2) -> void:
+	if _pose_tween != null:
+		_pose_tween.kill()
+	global_position = point
+
+func _start_hover_animation() -> void:
+	pass # The owning hand composes fan, hover and selection in one pose.
+
+func _stop_hover_animation() -> void:
+	pass
 
 func _can_start_hovering() -> bool:
 	return true
@@ -63,6 +94,7 @@ func _enter_state(state: DraggableState, from_state: DraggableState) -> void:
 	if state == DraggableState.HOVERING:
 		input_scope.enter_hover(self)
 	super._enter_state(state, from_state)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func _exit_state(state: DraggableState) -> void:
 	if state == DraggableState.HOVERING:
@@ -70,5 +102,6 @@ func _exit_state(state: DraggableState) -> void:
 	super._exit_state(state)
 
 func _exit_tree() -> void:
-	# Upstream's hover counters are static; balance state when a hand is replaced.
+	if _pose_tween != null:
+		_pose_tween.kill()
 	change_state(DraggableState.IDLE)

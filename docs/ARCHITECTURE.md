@@ -44,6 +44,8 @@ Media resources map table/card/piece artwork and local event cues. Only successf
 
 Native touch events activate custom cards/boards once. Emulated mouse events remain enabled for ordinary Godot toolbar controls; custom widgets ignore that duplicate mouse path. Keyboard focus and common client shortcuts coexist. Layout uses containers and a scrollable game slot with a 640 × 480 minimum desktop window.
 
+The card interaction surface anchors hovered targets while card artwork expands and hit-tests painted transforms/order. Per-hand gestures retain a frame token, so range/drag previews can never transfer authoritative ownership. Timed motion and countdown policies are owned by the mounted view; the host preserves only local presentation state across unmounts. That state stays outside rule snapshots/replay. Settlement requests use the same table/token ownership boundary as gameplay. See INTERACTION.md for the exact baseline.
+
 ## Replay boundary
 
 Schema 1 stores game ID, rules revision, seed, and ordered accepted commands. The deterministic deck uses fixed integer operations. Unsupported identity/revisions, malformed fields, invalid turns and illegal commands reject the archive. A loaded replay is completely validated before a new table is attached; existing tables are never replaced by partially loaded data.

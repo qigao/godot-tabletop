@@ -63,12 +63,29 @@ jobs:
         with:
           name: Tabletop-${{ runner.os }}
           path: exports/Tabletop-${{ runner.os }}.zip
+      - name: Download and verify recording encoder
+        if: runner.os == 'Linux'
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/ffmpeg.gz" "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64.gz"
+          python - <<'PY'
+          from pathlib import Path
+          import gzip, hashlib, os
+          root = Path(os.environ['RUNNER_TEMP'])
+          archive = (root / 'ffmpeg.gz').read_bytes()
+          if hashlib.sha256(archive).hexdigest() != 'bfe8a8fc511530457b528c48d77b5737527b504a3797a9bc4866aeca69c2dffa':
+              raise SystemExit('Recording encoder checksum mismatch')
+          binary = root / 'ffmpeg'
+          binary.write_bytes(gzip.decompress(archive))
+          binary.chmod(0o755)
+          PY
       - name: Render actual client layouts
         if: runner.os == 'Linux'
-        run: python scripts/render_client.py "$RUNNER_TEMP/godot/${{ matrix.binary }}"
+        run: python scripts/render_client.py "$RUNNER_TEMP/godot/${{ matrix.binary }}" "$RUNNER_TEMP/ffmpeg"
       - name: Upload rendered client layouts
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: Client-layouts
-          path: docs/images/*.png
+          path: |
+            docs/images/*.png
+            docs/images/*.gif

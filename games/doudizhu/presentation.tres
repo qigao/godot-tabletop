@@ -1,7 +1,18 @@
 [gd_resource type="Resource" script_class="TabletopCardTableLayout" format=3]
 
+[ext_resource type="Script" path="res://client/presentation/card_interaction.gd" id="1_x0hsb"]
+[ext_resource type="Script" path="res://client/presentation/card_motion.gd" id="3_dem5b"]
 [ext_resource type="Script" path="res://client/presentation/card_table_layout.gd" id="layout"]
 [ext_resource type="Resource" path="res://games/doudizhu/media.tres" id="media"]
+
+[sub_resource type="Resource" id="Resource_abmju"]
+script = ExtResource("1_x0hsb")
+drag_to_play = true
+drop_action = "play"
+
+[sub_resource type="Resource" id="Resource_h2ymi"]
+script = ExtResource("3_dem5b")
+deal_interval = 0.018
 
 [resource]
 script = ExtResource("layout")
@@ -20,41 +31,9 @@ active_seat_binding = {
 "get": "observation.turn"
 }
 seat_text = {
-"format": ["Seat %d  /  %s
+"format": ["Seat %d
 %d cards", {
 "get": "seat_number"
-}, {
-"if": [{
-"eq": [{
-"get": "observation.phase"
-}, "bidding"]
-}, {
-"format": ["Bid: %s", {
-"if": [{
-"eq": [{
-"at": [{
-"get": "observation.bids"
-}, {
-"get": "seat"
-}]
-}, -1]
-}, "-", {
-"at": [{
-"get": "observation.bids"
-}, {
-"get": "seat"
-}]
-}]
-}]
-}, {
-"if": [{
-"eq": [{
-"get": "observation.landlord"
-}, {
-"get": "seat"
-}]
-}, "Landlord", "Farmer"]
-}]
 }, {
 "at": [{
 "get": "observation.hand_counts"
@@ -191,7 +170,7 @@ selection_text = {
 "get": "legal_count"
 }]
 }
-help_text = "Click / tap / Space: select  |  Arrow keys: next card  |  Local hotseat: pass the device"
+help_text = "Click / tap: select   |   Slide: select a range   |   Drag selected cards onto the table   |   Right click / Esc: clear"
 actions = Array[Dictionary]([{
 "browse": false,
 "command": {
@@ -289,4 +268,293 @@ actions = Array[Dictionary]([{
 }
 }])
 selection_equivalence = "group"
+interaction = SubResource("Resource_abmju")
+motion = SubResource("Resource_h2ymi")
+seat_anchors = PackedVector2Array(0.12, 0.82, 0.88, 0.22, 0.12, 0.22)
+count_binding = {
+"at": [{
+"get": "observation.hand_counts"
+}, {
+"get": "seat"
+}]
+}
+role_binding = {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}, "Bidding", {
+"if": [{
+"eq": [{
+"get": "observation.landlord"
+}, {
+"get": "seat"
+}]
+}, "LANDLORD", "FARMER"]
+}]
+}
+public_zones = Array[Dictionary]([{
+"anchor": Vector2(0.5, 0.12),
+"caption": "Bottom",
+"card_size": Vector2(30, 46),
+"cards": {
+"get": "observation.bottom"
+},
+"hidden_count": {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}, 3, 0]
+},
+"id": "bottom",
+"size": Vector2(160, 68)
+}, {
+"anchor": Vector2(0.5, 0.7),
+"caption": {
+"if": [{
+"empty": {
+"get": "observation.last_pattern"
+}
+}, "A new trick", {
+"get": "observation.last_pattern.kind"
+}]
+},
+"card_size": Vector2(48, 73),
+"cards": {
+"get": "observation.last_cards"
+},
+"hidden_count": 0,
+"id": "last_play",
+"size": Vector2(450, 100)
+}])
+visual_events = Array[Dictionary]([{
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "bid",
+"target": "seat",
+"text": {
+"format": ["Bid %d", {
+"get": "event.value"
+}]
+},
+"when": true
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "passed",
+"target": "seat",
+"text": "PASS",
+"when": true
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "landlord",
+"target": "table",
+"text": "LANDLORD",
+"when": true
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "SINGLE",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "single"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "PAIR",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "pair"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "TRIPLE",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "triple"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "TRIPLE + ONE",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "triple_single"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "TRIPLE + PAIR",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "triple_pair"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "STRAIGHT",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "straight"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "PAIR RUN",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "pair_straight"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "AIRPLANE",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "airplane"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "AIRPLANE + SINGLES",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "airplane_single"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "AIRPLANE + PAIRS",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "airplane_pair"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "FOUR + TWO",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "four_two_single"]
+}
+}, {
+"burst": false,
+"color": Color(0.96862745, 0.7764706, 0.41960785, 1),
+"event_type": "played",
+"target": "table",
+"text": "FOUR + TWO PAIRS",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "four_two_pair"]
+}
+}, {
+"burst": true,
+"color": Color(0.92941177, 0.59607846, 0.4117647, 1),
+"event_type": "played",
+"target": "table",
+"text": "BOMB",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "bomb"]
+}
+}, {
+"burst": true,
+"color": Color(0.92941177, 0.59607846, 0.4117647, 1),
+"event_type": "played",
+"target": "table",
+"text": "ROCKET",
+"when": {
+"eq": [{
+"get": "event.pattern.kind"
+}, "rocket"]
+}
+}, {
+"burst": false,
+"color": Color(0.92941177, 0.59607846, 0.4117647, 1),
+"event_type": "played",
+"target": "seat",
+"text": "1 LEFT",
+"when": {
+"eq": [{
+"at": [{
+"get": "observation.hand_counts"
+}, {
+"get": "event.seat"
+}]
+}, 1]
+}
+}, {
+"burst": false,
+"color": Color(0.92941177, 0.59607846, 0.4117647, 1),
+"event_type": "played",
+"target": "seat",
+"text": "2 LEFT",
+"when": {
+"eq": [{
+"at": [{
+"get": "observation.hand_counts"
+}, {
+"get": "event.seat"
+}]
+}, 2]
+}
+}])
+motion_events = Array[Dictionary]([{
+"event_type": "landlord",
+"kind": "reveal",
+"zone": "bottom"
+}, {
+"cards": {
+"get": "event.cards"
+},
+"event_type": "played",
+"kind": "play",
+"zone": "last_play"
+}])
+settlement_when = {
+"eq": [{
+"get": "observation.phase"
+}, "finished"]
+}
+clock_seconds = 60.0
+timeout_actions = PackedStringArray("pass", "bid_0")
 media = ExtResource("media")

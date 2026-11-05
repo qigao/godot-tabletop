@@ -18,6 +18,8 @@ func _frames() -> void:
 	await process_frame
 	await process_frame
 	await process_frame
+	if current_scene != null and current_scene.current_view is TabletopCardTableView:
+		current_scene.current_view.skip_animation()
 
 func _run() -> void:
 	root.size = Vector2i(1280, 800)
@@ -27,10 +29,13 @@ func _run() -> void:
 	await _frames()
 	var id: int = app.workspace.active_id
 	var view = app.current_view
+	view.set_reduced_motion(true)
 	_check(view.hand.get_card_count() == 17, "Card module mounted through catalog")
 	_check(view is TabletopCardTableView and view.configuration is TabletopCardTableLayout, "Card module uses configured family renderer")
 	_check(view.hand.cards_node.get_child(0).card_info.face_texture.get_width() > 0, "Configured card artwork imported, including in PCK")
 	_check(view.configuration.media.cues.size() > 0 and view.configuration.media.cues[0].stream.get_length() > 0, "Configured audio imported, including in PCK")
+	_check(view.configuration.media.card_back.get_width() > 0, "Opponent/deck artwork is present in PCK")
+	_check(view.configuration.media.background_music.loop_mode == AudioStreamWAV.LOOP_FORWARD, "Background loop import survives packing")
 	view.activate("bid_3")
 	await _frames()
 	_check(view.hand.get_card_count() == 20, "Bidding uses client command path")
@@ -50,8 +55,14 @@ func _run() -> void:
 	_check(view.hand.selected_keys.size() == 1, "Card mouse signal selects")
 	var touch := InputEventScreenTouch.new()
 	touch.pressed = true
+	mouse.pressed = false
+	card.gui_input.emit(mouse)
 	card.gui_input.emit(touch)
 	_check(view.hand.selected_keys.is_empty(), "Card touch signal toggles selection once")
+	touch.pressed = false
+	card.gui_input.emit(touch)
+	touch.pressed = true
+	mouse.pressed = true
 	mouse.device = InputEvent.DEVICE_ID_EMULATION
 	card.gui_input.emit(mouse)
 	_check(view.hand.selected_keys.is_empty(), "Touch emulated mouse cannot toggle card twice")
