@@ -1,0 +1,503 @@
+[gd_resource type="Resource" script_class="TabletopMediaPack" format=3]
+
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-0.wav" id="audio_0"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-1.wav" id="audio_1"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-2.wav" id="audio_2"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-3.wav" id="audio_3"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/pass.wav" id="audio_4"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/finished.wav" id="audio_5"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bomb.wav" id="audio_6"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/rocket.wav" id="audio_7"]
+[ext_resource type="AudioStream" path="res://assets/audio/card.wav" id="audio_8"]
+[ext_resource type="AudioStream" path="res://assets/audio/deal.wav" id="audio_9"]
+[ext_resource type="Script" path="res://client/presentation/audio_cue.gd" id="cue"]
+[ext_resource type="Texture2D" path="res://games/doudizhu/assets/card-face.svg" id="face"]
+[ext_resource type="Texture2D" path="res://games/doudizhu/assets/joker.svg" id="joker"]
+[ext_resource type="Script" path="res://client/presentation/media_pack.gd" id="layout"]
+[ext_resource type="Texture2D" path="res://games/doudizhu/assets/table.svg" id="table"]
+
+[sub_resource type="Resource" id="cue_0"]
+script = ExtResource("cue")
+id = "bid_0"
+event_type = "bid"
+fields = {
+"value": 0
+}
+stream = ExtResource("audio_0")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_1"]
+script = ExtResource("cue")
+id = "bid_1"
+event_type = "bid"
+fields = {
+"value": 1
+}
+stream = ExtResource("audio_1")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_2"]
+script = ExtResource("cue")
+id = "bid_2"
+event_type = "bid"
+fields = {
+"value": 2
+}
+stream = ExtResource("audio_2")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_3"]
+script = ExtResource("cue")
+id = "bid_3"
+event_type = "bid"
+fields = {
+"value": 3
+}
+stream = ExtResource("audio_3")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_4"]
+script = ExtResource("cue")
+id = "pass"
+event_type = "passed"
+stream = ExtResource("audio_4")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_5"]
+script = ExtResource("cue")
+id = "finished"
+event_type = "finished"
+stream = ExtResource("audio_5")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_6"]
+script = ExtResource("cue")
+id = "bomb"
+event_type = "played"
+fields = {
+"pattern.kind": "bomb"
+}
+stream = ExtResource("audio_6")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_7"]
+script = ExtResource("cue")
+id = "rocket"
+event_type = "played"
+fields = {
+"pattern.kind": "rocket"
+}
+stream = ExtResource("audio_7")
+channel = "voice"
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_8"]
+script = ExtResource("cue")
+id = "card"
+event_type = "played"
+stream = ExtResource("audio_8")
+volume_db = -8.0
+
+[sub_resource type="Resource" id="cue_9"]
+script = ExtResource("cue")
+id = "deal"
+event_type = "landlord"
+stream = ExtResource("audio_9")
+volume_db = -8.0
+
+[resource]
+script = ExtResource("layout")
+table_texture = ExtResource("table")
+card_face = ExtResource("face")
+card_artwork = {
+"52": ExtResource("joker"),
+"53": ExtResource("joker")
+}
+cards = {
+"0": {
+"group": 3,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "3S",
+"symbol": "S",
+"title": "3"
+},
+"1": {
+"group": 3,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "3H",
+"symbol": "H",
+"title": "3"
+},
+"10": {
+"group": 5,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "5C",
+"symbol": "C",
+"title": "5"
+},
+"11": {
+"group": 5,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "5D",
+"symbol": "D",
+"title": "5"
+},
+"12": {
+"group": 6,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "6S",
+"symbol": "S",
+"title": "6"
+},
+"13": {
+"group": 6,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "6H",
+"symbol": "H",
+"title": "6"
+},
+"14": {
+"group": 6,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "6C",
+"symbol": "C",
+"title": "6"
+},
+"15": {
+"group": 6,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "6D",
+"symbol": "D",
+"title": "6"
+},
+"16": {
+"group": 7,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "7S",
+"symbol": "S",
+"title": "7"
+},
+"17": {
+"group": 7,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "7H",
+"symbol": "H",
+"title": "7"
+},
+"18": {
+"group": 7,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "7C",
+"symbol": "C",
+"title": "7"
+},
+"19": {
+"group": 7,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "7D",
+"symbol": "D",
+"title": "7"
+},
+"2": {
+"group": 3,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "3C",
+"symbol": "C",
+"title": "3"
+},
+"20": {
+"group": 8,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "8S",
+"symbol": "S",
+"title": "8"
+},
+"21": {
+"group": 8,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "8H",
+"symbol": "H",
+"title": "8"
+},
+"22": {
+"group": 8,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "8C",
+"symbol": "C",
+"title": "8"
+},
+"23": {
+"group": 8,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "8D",
+"symbol": "D",
+"title": "8"
+},
+"24": {
+"group": 9,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "9S",
+"symbol": "S",
+"title": "9"
+},
+"25": {
+"group": 9,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "9H",
+"symbol": "H",
+"title": "9"
+},
+"26": {
+"group": 9,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "9C",
+"symbol": "C",
+"title": "9"
+},
+"27": {
+"group": 9,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "9D",
+"symbol": "D",
+"title": "9"
+},
+"28": {
+"group": 10,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "10S",
+"symbol": "S",
+"title": "10"
+},
+"29": {
+"group": 10,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "10H",
+"symbol": "H",
+"title": "10"
+},
+"3": {
+"group": 3,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "3D",
+"symbol": "D",
+"title": "3"
+},
+"30": {
+"group": 10,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "10C",
+"symbol": "C",
+"title": "10"
+},
+"31": {
+"group": 10,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "10D",
+"symbol": "D",
+"title": "10"
+},
+"32": {
+"group": 11,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "JS",
+"symbol": "S",
+"title": "J"
+},
+"33": {
+"group": 11,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "JH",
+"symbol": "H",
+"title": "J"
+},
+"34": {
+"group": 11,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "JC",
+"symbol": "C",
+"title": "J"
+},
+"35": {
+"group": 11,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "JD",
+"symbol": "D",
+"title": "J"
+},
+"36": {
+"group": 12,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "QS",
+"symbol": "S",
+"title": "Q"
+},
+"37": {
+"group": 12,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "QH",
+"symbol": "H",
+"title": "Q"
+},
+"38": {
+"group": 12,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "QC",
+"symbol": "C",
+"title": "Q"
+},
+"39": {
+"group": 12,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "QD",
+"symbol": "D",
+"title": "Q"
+},
+"4": {
+"group": 4,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "4S",
+"symbol": "S",
+"title": "4"
+},
+"40": {
+"group": 13,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "KS",
+"symbol": "S",
+"title": "K"
+},
+"41": {
+"group": 13,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "KH",
+"symbol": "H",
+"title": "K"
+},
+"42": {
+"group": 13,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "KC",
+"symbol": "C",
+"title": "K"
+},
+"43": {
+"group": 13,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "KD",
+"symbol": "D",
+"title": "K"
+},
+"44": {
+"group": 14,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "AS",
+"symbol": "S",
+"title": "A"
+},
+"45": {
+"group": 14,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "AH",
+"symbol": "H",
+"title": "A"
+},
+"46": {
+"group": 14,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "AC",
+"symbol": "C",
+"title": "A"
+},
+"47": {
+"group": 14,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "AD",
+"symbol": "D",
+"title": "A"
+},
+"48": {
+"group": 15,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "2S",
+"symbol": "S",
+"title": "2"
+},
+"49": {
+"group": 15,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "2H",
+"symbol": "H",
+"title": "2"
+},
+"5": {
+"group": 4,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "4H",
+"symbol": "H",
+"title": "4"
+},
+"50": {
+"group": 15,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "2C",
+"symbol": "C",
+"title": "2"
+},
+"51": {
+"group": 15,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "2D",
+"symbol": "D",
+"title": "2"
+},
+"52": {
+"group": 16,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "SJ",
+"symbol": "JOKER",
+"title": "SJ"
+},
+"53": {
+"group": 17,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "BJ",
+"symbol": "JOKER",
+"title": "BJ"
+},
+"6": {
+"group": 4,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "4C",
+"symbol": "C",
+"title": "4"
+},
+"7": {
+"group": 4,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "4D",
+"symbol": "D",
+"title": "4"
+},
+"8": {
+"group": 5,
+"ink": Color(0.09, 0.15, 0.23, 1),
+"label": "5S",
+"symbol": "S",
+"title": "5"
+},
+"9": {
+"group": 5,
+"ink": Color(0.72, 0.16, 0.23, 1),
+"label": "5H",
+"symbol": "H",
+"title": "5"
+}
+}
+cues = Array[ExtResource("cue")]([SubResource("cue_0"), SubResource("cue_1"), SubResource("cue_2"), SubResource("cue_3"), SubResource("cue_4"), SubResource("cue_5"), SubResource("cue_6"), SubResource("cue_7"), SubResource("cue_8"), SubResource("cue_9")])

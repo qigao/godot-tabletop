@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="TabletopMediaPack" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/stone.wav" id="audio_0"]
+[ext_resource type="Texture2D" path="res://games/gomoku/assets/black-stone.svg" id="black"]
+[ext_resource type="Script" path="res://client/presentation/audio_cue.gd" id="cue"]
+[ext_resource type="Script" path="res://client/presentation/media_pack.gd" id="layout"]
+[ext_resource type="Texture2D" path="res://games/gomoku/assets/white-stone.svg" id="white"]
+
+[sub_resource type="Resource" id="cue_0"]
+script = ExtResource("cue")
+id = "stone"
+event_type = "placed"
+stream = ExtResource("audio_0")
+volume_db = -8.0
+
+[resource]
+script = ExtResource("layout")
+pieces = {
+"0": {
+"fill": Color(0.125, 0.16, 0.21, 1),
+"mode": "image",
+"outline": Color(0.067, 0.098, 0.145, 1),
+"text": "",
+"texture": ExtResource("black")
+},
+"1": {
+"fill": Color(1, 0.98, 0.94, 1),
+"mode": "image",
+"outline": Color(0.54, 0.47, 0.37, 1),
+"text": "",
+"texture": ExtResource("white")
+}
+}
+cues = Array[ExtResource("cue")]([SubResource("cue_0")])

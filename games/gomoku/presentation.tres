@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="TabletopBoardLayout" format=3]
+
+[ext_resource type="Script" path="res://client/presentation/board_layout.gd" id="layout"]
+[ext_resource type="Resource" path="res://games/gomoku/media.tres" id="media"]
+
+[resource]
+script = ExtResource("layout")
+cells_binding = {
+"get": "observation.board"
+}
+last_cell_binding = {
+"get": "observation.last_cell"
+}
+highlight_binding = {
+"get": "observation.winning_cells"
+}
+blocked_binding = {
+"eq": [{
+"get": "observation.phase"
+}, "finished"]
+}
+status_text = {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "finished"]
+}, {
+"if": [{
+"eq": [{
+"get": "observation.winner"
+}, -1]
+}, "Draw", {
+"if": [{
+"eq": [{
+"get": "observation.winner"
+}, 0]
+}, "Black wins", "White wins"]
+}]
+}, {
+"format": ["%s to move", {
+"if": [{
+"eq": [{
+"get": "observation.turn"
+}, 0]
+}, "Black", "White"]
+}]
+}]
+}
+detail_text = {
+"format": ["%d moves  /  15 x 15  /  Local hotseat", {
+"get": "observation.moves"
+}]
+}
+help_text = "Click / tap an intersection  |  Arrow keys + Enter  |  Freestyle: five or more wins"
+command = {
+"type": "place"
+}
+media = ExtResource("media")

@@ -8,9 +8,12 @@ extends Resource
 @export var seat_count: int
 @export var rules_script: Script
 @export var view_scene: PackedScene
+@export var presentation: TabletopPresentation
 
 func create_rules() -> TabletopRules:
 	return rules_script.new()
 
 func create_view() -> TabletopGameView:
-	return view_scene.instantiate() as TabletopGameView
+	var view := view_scene.instantiate() as TabletopGameView
+	view.configuration = presentation
+	return view

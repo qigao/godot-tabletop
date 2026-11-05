@@ -11,6 +11,7 @@ var highlighted: Array = []
 var last_cell := -1
 var focused_cell := -1
 var blocked := false
+var table_texture: Texture2D
 
 func _ready() -> void:
 	focused_cell = int(rows / 2) * columns + int(columns / 2)
@@ -45,6 +46,8 @@ func cell_at(point: Vector2) -> int:
 func _draw() -> void:
 	var rect := board_rect()
 	draw_style_box(TabletopUI.panel(Color("c8a776"), 12), rect.grow(14))
+	if table_texture != null:
+		draw_texture_rect(table_texture, rect.grow(14), false)
 	for column in range(columns):
 		draw_line(cell_position(column), cell_position((rows - 1) * columns + column), Color("60492f"), 1)
 	for row in range(rows):
@@ -54,7 +57,11 @@ func _draw() -> void:
 		var piece: Dictionary = pieces[cell]
 		var point := cell_position(int(cell))
 		draw_circle(point + Vector2(1, 2), radius, Color(0, 0, 0, 0.2))
-		draw_circle(point, radius, piece.fill)
+		if piece.mode == "image":
+			draw_texture_rect(piece.texture, Rect2(point - Vector2.ONE * radius, Vector2.ONE * radius * 2), false)
+		else:
+			assert(piece.mode == "disc")
+			draw_circle(point, radius, piece.fill)
 		draw_arc(point, radius, 0, TAU, 32, piece.outline, 1.2, true)
 		if piece.text != "":
 			draw_string(ThemeDB.fallback_font, point + Vector2(-radius * 0.5, radius * 0.5),

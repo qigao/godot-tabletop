@@ -28,15 +28,18 @@ func _run() -> void:
 	var id: int = app.workspace.active_id
 	var view = app.current_view
 	_check(view.hand.get_card_count() == 17, "Card module mounted through catalog")
-	view._on_bid(3)
+	_check(view is TabletopCardTableView and view.configuration is TabletopCardTableLayout, "Card module uses configured family renderer")
+	_check(view.hand.cards_node.get_child(0).card_info.face_texture.get_width() > 0, "Configured card artwork imported, including in PCK")
+	_check(view.configuration.media.cues.size() > 0 and view.configuration.media.cues[0].stream.get_length() > 0, "Configured audio imported, including in PCK")
+	view.activate("bid_3")
 	await _frames()
 	_check(view.hand.get_card_count() == 20, "Bidding uses client command path")
 	var before: Dictionary = app.workspace.snapshot(id)
-	view._on_cycle()
-	_check(not view.hand.selected_keys.is_empty() and not view.play_button.disabled, "Cycle selects legal play")
+	view.activate("browse")
+	_check(not view.hand.selected_keys.is_empty() and not view.action_buttons.play.disabled, "Cycle selects legal play")
 	_check(app.workspace.snapshot(id) == before, "Cycling does not mutate game")
 	app._restart()
-	view._on_bid(3)
+	view.activate("bid_3")
 	await _frames()
 	var card: Card = view.hand.cards_node.get_child(0)
 	card.change_state(DraggableObject.DraggableState.IDLE)
@@ -58,7 +61,7 @@ func _run() -> void:
 	key.keycode = KEY_SPACE
 	card.gui_input.emit(key)
 	_check(view.hand.selected_keys.size() == 1, "Card keyboard signal selects")
-	view._on_play()
+	view.activate("play")
 	await _frames()
 	_check(app.workspace.frame(id).cursor == 2 and app.workspace.snapshot(id).hands[0].size() == 19, "Selected card goes through client authority")
 	var scope = view.manager.input_scope
@@ -87,6 +90,9 @@ func _run() -> void:
 	var board_id: int = app.workspace.active_id
 	var board: TabletopBoardCanvas = board_view.board
 	_check(board.columns == 15 and board.rows == 15, "Playable board module mounted")
+	_check(board_view is TabletopPlacementBoardView and board_view.configuration is TabletopBoardLayout, "Board module uses separate configured renderer")
+	app._toggle_sound()
+	_check(app.current_view.cues.muted, "Common sound control mutes active view")
 	mouse.position = board.cell_position(112)
 	board._gui_input(mouse)
 	_check(app.workspace.snapshot(board_id).board[112] == 0, "Board mouse hit maps to cell command")
@@ -146,6 +152,7 @@ func _run() -> void:
 	app.workspace.select_table(id)
 	await _frames()
 	_check(app.current_view.hand.get_card_count() == 17 and app.workspace.frame(id).cursor == 2, "Switch restores card table progress")
+	_check(app.current_view.cues.muted, "Sound setting persists across game families")
 	for card_node in app.current_view.hand.cards_node.get_children():
 		_check(card_node.global_position.x >= 0 and card_node.global_position.x + card_node.card_size.x <= app.size.x, "Hand fits smaller window")
 	while app.workspace.active_id != -1:

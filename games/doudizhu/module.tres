@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="TabletopGameModule" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="TabletopGameModule" format=3]
 
 [ext_resource type="Script" path="res://client/game_module.gd" id="1"]
 [ext_resource type="Script" path="res://games/doudizhu/rules.gd" id="2"]
-[ext_resource type="PackedScene" path="res://ui/views/doudizhu_view.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://ui/cards/card_table_view.tscn" id="3"]
+[ext_resource type="Resource" path="res://games/doudizhu/presentation.tres" id="4"]
 
 [resource]
 script = ExtResource("1")
@@ -12,3 +13,4 @@ kind = "card"
 seat_count = 3
 rules_script = ExtResource("2")
 view_scene = ExtResource("3")
+presentation = ExtResource("4")
