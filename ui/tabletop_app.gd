@@ -26,11 +26,16 @@ var history_label: Label
 var status_label: Label
 var save_dialog: FileDialog
 var load_dialog: FileDialog
-var _save_table_id := -1
+var _save_archive: Dictionary
+var _window_focused := true
+var _application_focused := true
+var _interaction_blocked := false
 
 func _ready() -> void:
 	_build_ui()
 	workspace.changed.connect(_refresh)
+	get_window().focus_exited.connect(_set_window_focus.bind(false))
+	get_window().focus_entered.connect(_set_window_focus.bind(true))
 	_new_table()
 
 func _build_ui() -> void:
@@ -117,6 +122,8 @@ func _build_ui() -> void:
 	load_dialog.filters = PackedStringArray(["*.json ; Tabletop replay"])
 	load_dialog.file_selected.connect(_load_file)
 	add_child(load_dialog)
+	for dialog in [save_dialog, load_dialog]:
+		dialog.visibility_changed.connect(_sync_interruption)
 
 func _new_table() -> void:
 	var id: String = game_picker.get_item_metadata(game_picker.selected)
@@ -151,6 +158,7 @@ func _refresh() -> void:
 		view_slot.add_child(current_view)
 		current_view.cues.muted = not sound_enabled
 		current_view.set_reduced_motion(reduced_motion)
+		current_view.set_suspended(_interaction_blocked)
 		current_view.restore_ui_state(workspace.view_state(workspace.active_id))
 		_view_table_id = workspace.active_id
 	current_view.present(frame)
@@ -175,11 +183,13 @@ func _unmount() -> void:
 	_view_table_id = -1
 
 func _on_view_command(command: Dictionary, token: int, table_id: int) -> void:
+	if _interaction_blocked:
+		return
 	var result := workspace.submit(table_id, command, token)
 	status_label.text = "Move accepted" if result.ok else "Move rejected: " + result.error.replace("_", " ")
 
 func _on_view_lifecycle(action: String, token: int, table_id: int) -> void:
-	if table_id != workspace.active_id or table_id == -1 or workspace.frame(table_id).token != token:
+	if _interaction_blocked or table_id != workspace.active_id or table_id == -1 or workspace.frame(table_id).token != token:
 		return
 	match action:
 		"new_round": workspace.reset_table(table_id, (int(workspace.frame(table_id).seed) + 1) & 0xffffffff)
@@ -219,9 +229,28 @@ func _toggle_motion() -> void:
 	if current_view != null:
 		current_view.set_reduced_motion(reduced_motion)
 
+func _set_window_focus(value: bool) -> void:
+	_window_focused = value
+	_sync_interruption()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		_application_focused = what == NOTIFICATION_APPLICATION_FOCUS_IN
+		_sync_interruption()
+
+func _sync_interruption() -> void:
+	var interrupted := not _application_focused or not _window_focused or save_dialog.visible or load_dialog.visible
+	if interrupted == _interaction_blocked:
+		return
+	_interaction_blocked = interrupted
+	if current_view != null:
+		current_view.set_suspended(interrupted)
+		if interrupted:
+			workspace.interrupt_table(workspace.active_id)
+
 func _save_replay() -> void:
-	_save_table_id = workspace.active_id
-	save_dialog.current_file = "%s-table-%d.json" % [workspace.frame(_save_table_id).game_id, _save_table_id]
+	_save_archive = workspace.export_replay(workspace.active_id)
+	save_dialog.current_file = "%s-table-%d.json" % [workspace.frame(workspace.active_id).game_id, workspace.active_id]
 	save_dialog.popup_centered_ratio(0.8)
 
 func _save_file(path: String) -> void:
@@ -229,7 +258,7 @@ func _save_file(path: String) -> void:
 	if file == null:
 		status_label.text = "Cannot write replay: " + error_string(FileAccess.get_open_error())
 		return
-	file.store_string(JSON.stringify(workspace.export_replay(_save_table_id), "\t"))
+	file.store_string(JSON.stringify(_save_archive, "\t"))
 	status_label.text = "Replay saved: " + path.get_file()
 
 func _load_file(path: String) -> void:
@@ -241,6 +270,8 @@ func _load_file(path: String) -> void:
 	status_label.text = "Replay loaded into a new table" if result.ok else "Replay rejected: " + result.error.replace("_", " ")
 
 func _unhandled_key_input(event: InputEvent) -> void:
+	if _interaction_blocked:
+		return
 	if event is InputEventKey and event.pressed and not event.echo and (event.ctrl_pressed or event.meta_pressed):
 		match event.keycode:
 			KEY_Z:

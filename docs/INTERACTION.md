@@ -40,6 +40,14 @@ On expiry, the configured priority list tries only currently visible, enabled le
 
 Settlement blocks hand/gameplay actions and shows the actual bound outcome/scores. **New round** asks the host to reset the current table with the next seed; **Close table** asks it to close that table. Both requests use the frame token. A stale result panel cannot restart or close a newer match. Common history controls remain available for review.
 
+## Dialogs and application focus
+
+Save/load dialogs, main-window focus loss and application focus loss suspend the mounted view. These sources compose: closing a dialog cannot resume an application that remains in the background, and returning focus cannot bypass an open dialog. This is presentation suspension; it does not change the user's **Pause** setting or the rules/history.
+
+An interruption invalidates the old UI token, cancels gestures and transient motion, displays the committed state, stops foreground announcement queues and pauses music. The local clock keeps its remaining time and eligibility. Input and music resume only after all suspension sources clear; old announcements and animations are not replayed. Historical/imported clocks remain stopped. Card and placement-board views share this boundary through `TabletopGameView`, with no game-specific host branches.
+
+**Save replay** captures the complete existing replay (including its redo tail) when the dialog opens. The eventual file write uses that value snapshot, independently of later table changes or closure. It does not acquire another table's history.
+
 ## Configuration points
 
 - `client/presentation/card_interaction.gd`: selection/hover parameters, pointer threshold, sweep/drop toggles, drop action, keyboard range and clear behavior.
@@ -52,6 +60,8 @@ The card renderer has no imports from DouDiZhu rules and no branches on individu
 ## Evidence and remaining acceptance
 
 `tests/interaction.gd` injects actual Godot viewport mouse/touch/key events. It exercises deal/reveal timing, stable overlapping-card hits, click/sweep/drag, illegal drops, cancellation, paused/historical timers, configured timeout commands, switching during a deal, a complete game and pointer-driven result retry. The same suite runs from the packaged PCK, in addition to the ordinary scene checks. The other suites continue to cover rules, three complete configured games, alternate string-card engines and replay isolation.
+
+`tests/interruptions.gd` additionally checks rapid input with motion enabled, touch ownership, modal/application/window suspension, remaining-time resume, stale leases, explicit pause/history/import preservation, replay snapshot writes after table closure, and board input recovery. It runs against source and PCK. Injected Godot window signals/application notifications do not establish physical OS focus behavior; that remains #2.
 
 Linux native OpenGL acceptance captures desktop, compact card/board and settlement layouts. `client-interactions.gif` is assembled from actual rendered deal, hover, selection and drag/drop frames; it is not a generated mockup. CI uploads the motion/layout captures alongside each platform's runnable client.
 

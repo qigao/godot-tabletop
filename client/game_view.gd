@@ -12,6 +12,7 @@ var configuration: TabletopPresentation
 var cues: TabletopCuePlayer
 var client_frame: Dictionary
 var reduced_motion := false
+var suspended := false
 
 func _ready() -> void:
 	cues = TabletopCuePlayer.new()
@@ -21,9 +22,11 @@ func _ready() -> void:
 func present(frame: Dictionary) -> void:
 	client_frame = frame
 	frame_token = frame.token
-	blocked = frame.paused
+	blocked = frame.paused or suspended
 	render(frame.observation, frame.legal_actions)
-	cues.present(frame)
+	var audio_frame := frame.duplicate()
+	audio_frame.paused = blocked
+	cues.present(audio_frame)
 
 func binding_context(observation: Dictionary) -> Dictionary:
 	return {"observation": observation, "assets": {"cards": configuration.media.cards}}
@@ -33,6 +36,11 @@ func request_command(command: Dictionary) -> void:
 
 func set_reduced_motion(value: bool) -> void:
 	reduced_motion = value
+
+func set_suspended(value: bool) -> void:
+	suspended = value
+	if not client_frame.is_empty():
+		present(client_frame)
 
 func capture_ui_state() -> Dictionary:
 	return {}

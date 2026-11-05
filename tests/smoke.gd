@@ -133,8 +133,9 @@ func _run() -> void:
 	key.ctrl_pressed = false
 	app._on_seek(0)
 	_check(app.workspace.snapshot(board_id).moves == 0 and app.history_label.text == "Move 0 / 3", "Common replay slider")
-	app._save_table_id = board_id
+	app._save_replay()
 	app._save_file("user://client-scene-replay.json")
+	app.save_dialog.hide()
 	app._load_file("user://client-scene-replay.json")
 	await _frames()
 	_check(app.workspace.active_id != board_id and app.workspace.snapshot(app.workspace.active_id).moves == 3, "Real replay file loads a new table at end")
