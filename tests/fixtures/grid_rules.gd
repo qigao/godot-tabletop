@@ -7,6 +7,9 @@ func game_id() -> String:
 func rules_revision() -> String:
 	return "grid-v1"
 
+func active_seat(state: Dictionary) -> int:
+	return int(state.turn)
+
 func initial_state(_seed_value: int) -> Dictionary:
 	return {"turn": 0, "cells": [-1, -1, -1, -1, -1, -1, -1, -1, -1]}
 

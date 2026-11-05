@@ -11,6 +11,9 @@ func game_id() -> String:
 func rules_revision() -> String:
 	return "ddz-classic-v1"
 
+func active_seat(state: Dictionary) -> int:
+	return int(state.turn)
+
 func initial_state(seed_value: int) -> Dictionary:
 	return _deal(seed_value, 0)
 

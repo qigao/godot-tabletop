@@ -56,3 +56,19 @@ jobs:
           PY
       - name: Import, rules, replay, and real addon scene
         run: python scripts/check.py "$RUNNER_TEMP/godot/${{ matrix.binary }}"
+      - name: Package and accept runnable client
+        run: python scripts/package_client.py "$RUNNER_TEMP/godot/${{ matrix.binary }}" "$RUNNER_TEMP/godot" "${{ runner.os }}" "exports/Tabletop-${{ runner.os }}.zip"
+      - name: Upload local client bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tabletop-${{ runner.os }}
+          path: exports/Tabletop-${{ runner.os }}.zip
+      - name: Render actual client layouts
+        if: runner.os == 'Linux'
+        run: python scripts/render_client.py "$RUNNER_TEMP/godot/${{ matrix.binary }}"
+      - name: Upload rendered client layouts
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Client-layouts
+          path: docs/images/*.png
