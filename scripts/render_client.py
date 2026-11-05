@@ -21,7 +21,7 @@ for name in captures:
     if (root / "docs/images" / name).stat().st_size == 0:
         raise SystemExit("Empty client capture: " + name)
 
-subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-framerate", "10",
+subprocess.run([str(Path(sys.argv[2]).resolve()), "-hide_banner", "-loglevel", "error", "-y", "-framerate", "10",
                 "-i", str(root / "build/interaction-frames/%03d.png"),
                 "-filter_complex", "scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=bayer:bayer_scale=4",
                 str(root / "docs/images/client-interactions.gif")], check=True)
