@@ -98,3 +98,9 @@ func load_replay(text: String) -> Dictionary:
 
 func snapshot(id: int) -> Dictionary:
 	return _tables[id].snapshot()
+
+func save_view_state(id: int, state: Dictionary) -> void:
+	_tables[id].view_state = state.duplicate(true)
+
+func view_state(id: int) -> Dictionary:
+	return _tables[id].view_state.duplicate(true)

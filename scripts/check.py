@@ -11,13 +11,14 @@ checks = [
     ("legal actions", ["--script", "res://tests/legal_actions.gd"]),
     ("client engine", ["--script", "res://tests/client.gd"]),
     ("configured presentation", ["--script", "res://tests/presentation.gd"]),
+    ("interaction UX", ["--script", "res://tests/interaction.gd"]),
     ("ui", ["--script", "res://tests/smoke.gd"]),
 ]
 for name, arguments in checks:
     result = subprocess.run(
         [godot, "--headless", "--path", str(root), *arguments],
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-        encoding="utf-8", errors="replace", check=False,
+        encoding="utf-8", errors="replace", check=False, timeout=120,
     )
     print(result.stdout, end="", flush=True)
     if result.returncode or "ERROR:" in result.stdout:

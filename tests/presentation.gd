@@ -41,6 +41,8 @@ func _configured_second_engine() -> void:
 	layout.media = TabletopMediaPack.new()
 	layout.sections = ["table", "actions", "hand", "help"]
 	layout.seat_order = [1, 0]
+	layout.seat_anchors = PackedVector2Array([Vector2(0.25, 0.25), Vector2(0.75, 0.25)])
+	layout.relative_seats = false
 	layout.card_size = Vector2(90, 130)
 	layout.table_color = Color.PURPLE
 	layout.numeric_card_keys = false
@@ -62,6 +64,7 @@ func _configured_second_engine() -> void:
 	var table := TabletopLocalTable.new(module, 0)
 	var view := module.create_view() as TabletopCardTableView
 	root.add_child(view)
+	view.set_reduced_motion(true)
 	view.present(table.frame())
 	var requests: Array[Dictionary] = []
 	view.command_requested.connect(func(command: Dictionary, token: int) -> void:
@@ -95,6 +98,7 @@ func _live_cues() -> void:
 	var id := workspace.create_table("doudizhu", 42)
 	var view := Catalog.module_for("doudizhu").create_view() as TabletopCardTableView
 	root.add_child(view)
+	view.set_reduced_motion(true)
 	view.present(workspace.frame(id))
 	var heard: Array[String] = []
 	view.cues.cue_started.connect(func(cue: String) -> void: heard.append(cue))
@@ -138,9 +142,10 @@ func _live_cues() -> void:
 	_check(workspace.frame(workspace.active_id).events.is_empty(), "Imported archives have no live cue events")
 	workspace.select_table(id)
 	_check(workspace.frame(id).events.is_empty(), "Returning to an old table clears announcement events")
-	view.cues.present({"token": 100, "paused": false, "events": [{"type": "played", "pattern": {"kind": "bomb"}}]})
+	view.cues.present({"token": 100, "transition": "live", "observation": {"hand_counts": [10, 10, 10]}, "paused": false, "events": [{"type": "played", "seat": 0, "pattern": {"kind": "bomb"}}]})
 	_check(heard.has("bomb"), "Nested event field chooses bomb voice")
-	view.cues.present({"token": 101, "paused": false, "events": [{"type": "played", "pattern": {"kind": "rocket"}}]})
+	_check(view.cues._players.music.stream.resource_path.ends_with("tension-music.wav"), "Configured bomb changes background independently of voice")
+	view.cues.present({"token": 101, "transition": "live", "observation": {"hand_counts": [10, 10, 10]}, "paused": false, "events": [{"type": "played", "seat": 0, "pattern": {"kind": "rocket"}}]})
 	_check(heard.has("rocket"), "Nested event field chooses rocket voice")
 	view.deactivate()
 	view.queue_free()
@@ -151,6 +156,7 @@ func _complete_doudizhu() -> void:
 		var table := TabletopLocalTable.new(Catalog.module_for("doudizhu"), seed_value)
 		var view := Catalog.module_for("doudizhu").create_view() as TabletopCardTableView
 		root.add_child(view)
+		view.set_reduced_motion(true)
 		view.cues.muted = true
 		view.present(table.frame())
 		view.command_requested.connect(func(command: Dictionary, token: int) -> void:

@@ -9,6 +9,8 @@ var cursor := 0
 var _session: TabletopSession
 var _timeline: Array[Dictionary] = []
 var _events: Array = []
+var _transition := "created"
+var view_state: Dictionary = {}
 
 func _init(game_module: TabletopGameModule, seed: int) -> void:
 	module = game_module
@@ -22,6 +24,7 @@ func frame() -> Dictionary:
 			"token": token, "paused": paused, "seat": seat,
 			"cursor": cursor, "length": _timeline.size(),
 			"events": _events.duplicate(true),
+			"transition": _transition,
 			"observation": _session.observe(seat), "legal_actions": _session.legal_actions(seat)}
 
 func submit(command: Dictionary, expected_token: int) -> Dictionary:
@@ -36,6 +39,7 @@ func submit(command: Dictionary, expected_token: int) -> Dictionary:
 		_timeline.append({"seat": seat, "command": command.duplicate(true)})
 		cursor += 1
 		_events = result.events.duplicate(true)
+		_transition = "live"
 		token += 1
 	return result
 
@@ -48,24 +52,26 @@ func seek(position: int) -> Dictionary:
 	assert(restored.ok, "Committed local history must replay")
 	_session = restored.session
 	cursor = position
-	invalidate_frame()
+	invalidate_frame("review")
 	return {"ok": true}
 
 func reset(seed: int) -> void:
 	seed_value = seed
 	_session = TabletopSession.new(module.create_rules(), seed)
 	_timeline.clear()
+	view_state.clear()
 	cursor = 0
 	paused = false
-	invalidate_frame()
+	invalidate_frame("reset")
 
 func set_paused(value: bool) -> void:
 	paused = value
-	invalidate_frame()
+	invalidate_frame("pause" if value else "resume")
 
-func invalidate_frame() -> void:
+func invalidate_frame(reason: String = "switch") -> void:
 	token += 1
 	_events.clear()
+	_transition = reason
 
 func export_replay() -> Dictionary:
 	return {"schema": 1, "game_id": module.id, "rules_revision": _session.rules.rules_revision(),
@@ -75,7 +81,7 @@ func adopt_replay(archive: Dictionary, restored: TabletopSession) -> void:
 	_session = restored
 	_timeline.assign(archive.commands.duplicate(true))
 	cursor = _timeline.size()
-	invalidate_frame()
+	invalidate_frame("import")
 
 func snapshot() -> Dictionary:
 	return _session.authoritative_snapshot()

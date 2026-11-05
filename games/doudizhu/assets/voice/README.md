@@ -20,3 +20,22 @@ espeak-ng --path=/path/containing/espeak-ng-data -v cmn -s 160 -w bid-3.wav '三
 ```
 
 The synthesizer executable and voice data are not distributed with the client. No external game recordings were copied. These clips demonstrate event mapping; physical speaker quality and final narration remain product acceptance.
+
+Additional interaction baseline clips:
+
+| Clip | Text |
+| --- | --- |
+| single.wav | 单张 |
+| pair.wav | 对子 |
+| triple.wav | 三张 |
+| triple_single.wav | 三带一 |
+| triple_pair.wav | 三带二 |
+| straight.wav | 顺子 |
+| pair_straight.wav | 连对 |
+| airplane.wav | 飞机 |
+| airplane_single.wav | 飞机带单 |
+| airplane_pair.wav | 飞机带对 |
+| four_two_single.wav | 四带二 |
+| four_two_pair.wav | 四带两对 |
+| one-left.wav | 我还剩一张牌 |
+| two-left.wav | 我还剩两张牌 |

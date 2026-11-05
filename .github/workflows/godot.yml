@@ -71,4 +71,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Client-layouts
-          path: docs/images/*.png
+          path: |
+            docs/images/*.png
+            docs/images/*.gif

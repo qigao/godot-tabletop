@@ -32,6 +32,21 @@ The exact implementation commit and three-platform CI result are recorded in the
 
 This covers the current components. New chess-style piece/move interactions require a separate board component; a rules script cannot infer layout. Physical speaker/input and production voice/art quality remain device/product acceptance. Exact-HEAD three-platform results are recorded in the PR and issue.
 
+## Required interaction baseline ([#11](https://github.com/qigao/godot-tabletop/issues/11))
+
+The user requires the conventional reference workflow, with variations customizable through components/resources. Passing rule/replay tests alone does not complete this milestone.
+
+- [x] Curved hand, stable painted-card hit regions, hover expansion, persistent selection lift and smooth movement.
+- [x] Viewport mouse/touch/key routes, click/sweep/group drag, clear/cancel, legal-target feedback and stale input isolation.
+- [x] Relative players/counts/roles/backs, public bottom and played-card zones.
+- [x] Sequential deal/reveal/play motion, skip/reduced motion and cancellation on lifecycle changes.
+- [x] Active-view countdown, configured legal timeout actions and inactive/paused/review isolation.
+- [x] Pattern/low-card callouts, separate voice/warning/effect streams, looping music and configured music changes.
+- [x] Settlement with actual scores, new-round/close controls and stale callback rejection.
+- [x] Actual viewport scenarios and native motion/layout capture; packaged scene and interaction acceptance.
+
+Exact implementation/three-platform evidence is recorded in #11 and its PR. Physical device/audio acceptance remains #2. The inspected reference itself uses click selection; sweep/drop are additional configurable modes. See INTERACTION.md for source mapping and evidence boundaries.
+
 ## Accepted rule/action evidence
 
 - 32 complete seeded single/pass DouDiZhu matches.

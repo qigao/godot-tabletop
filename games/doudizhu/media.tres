@@ -1,5 +1,22 @@
 [gd_resource type="Resource" script_class="TabletopMediaPack" format=3]
 
+[ext_resource type="AudioStream" path="res://assets/audio/table-music.wav" id="1_ya380"]
+[ext_resource type="Texture2D" path="res://games/doudizhu/assets/card-back.svg" id="3_4vsvm"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/single.wav" id="16_prbj7"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/pair.wav" id="17_3uw1x"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/triple.wav" id="18_nlk7p"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/triple_single.wav" id="19_l6gjr"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/triple_pair.wav" id="20_cttik"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/straight.wav" id="21_j0o6y"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/pair_straight.wav" id="22_xcx4t"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/airplane.wav" id="23_b4xld"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/airplane_single.wav" id="24_56hlq"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/airplane_pair.wav" id="25_wdc0m"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/four_two_single.wav" id="26_8hfoo"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/four_two_pair.wav" id="27_g1avd"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/one-left.wav" id="28_itpmv"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/two-left.wav" id="29_ryt3n"]
+[ext_resource type="AudioStream" path="res://assets/audio/tension-music.wav" id="30_seny3"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-0.wav" id="audio_0"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-1.wav" id="audio_1"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-2.wav" id="audio_2"]
@@ -112,10 +129,186 @@ event_type = "landlord"
 stream = ExtResource("audio_9")
 volume_db = -8.0
 
+[sub_resource type="Resource" id="Resource_3mqkx"]
+script = ExtResource("cue")
+id = "single"
+event_type = "played"
+fields = {
+"pattern.kind": "single"
+}
+stream = ExtResource("16_prbj7")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_nnxv8"]
+script = ExtResource("cue")
+id = "pair"
+event_type = "played"
+fields = {
+"pattern.kind": "pair"
+}
+stream = ExtResource("17_3uw1x")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_wpplw"]
+script = ExtResource("cue")
+id = "triple"
+event_type = "played"
+fields = {
+"pattern.kind": "triple"
+}
+stream = ExtResource("18_nlk7p")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_r7oa6"]
+script = ExtResource("cue")
+id = "triple_single"
+event_type = "played"
+fields = {
+"pattern.kind": "triple_single"
+}
+stream = ExtResource("19_l6gjr")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_q6ju8"]
+script = ExtResource("cue")
+id = "triple_pair"
+event_type = "played"
+fields = {
+"pattern.kind": "triple_pair"
+}
+stream = ExtResource("20_cttik")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_wx4gv"]
+script = ExtResource("cue")
+id = "straight"
+event_type = "played"
+fields = {
+"pattern.kind": "straight"
+}
+stream = ExtResource("21_j0o6y")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_ts8yw"]
+script = ExtResource("cue")
+id = "pair_straight"
+event_type = "played"
+fields = {
+"pattern.kind": "pair_straight"
+}
+stream = ExtResource("22_xcx4t")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_grk2f"]
+script = ExtResource("cue")
+id = "airplane"
+event_type = "played"
+fields = {
+"pattern.kind": "airplane"
+}
+stream = ExtResource("23_b4xld")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_4ook6"]
+script = ExtResource("cue")
+id = "airplane_single"
+event_type = "played"
+fields = {
+"pattern.kind": "airplane_single"
+}
+stream = ExtResource("24_56hlq")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_ibucy"]
+script = ExtResource("cue")
+id = "airplane_pair"
+event_type = "played"
+fields = {
+"pattern.kind": "airplane_pair"
+}
+stream = ExtResource("25_wdc0m")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_ldvwe"]
+script = ExtResource("cue")
+id = "four_two_single"
+event_type = "played"
+fields = {
+"pattern.kind": "four_two_single"
+}
+stream = ExtResource("26_8hfoo")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_cm80f"]
+script = ExtResource("cue")
+id = "four_two_pair"
+event_type = "played"
+fields = {
+"pattern.kind": "four_two_pair"
+}
+stream = ExtResource("27_g1avd")
+channel = "voice"
+
+[sub_resource type="Resource" id="Resource_1vdco"]
+script = ExtResource("cue")
+id = "low_1"
+event_type = "played"
+when = {
+"eq": [{
+"at": [{
+"get": "observation.hand_counts"
+}, {
+"get": "event.seat"
+}]
+}, 1]
+}
+stream = ExtResource("28_itpmv")
+channel = "notice"
+
+[sub_resource type="Resource" id="Resource_4mh2s"]
+script = ExtResource("cue")
+id = "low_2"
+event_type = "played"
+when = {
+"eq": [{
+"at": [{
+"get": "observation.hand_counts"
+}, {
+"get": "event.seat"
+}]
+}, 2]
+}
+stream = ExtResource("29_ryt3n")
+channel = "notice"
+
+[sub_resource type="Resource" id="Resource_dn0oa"]
+script = ExtResource("cue")
+id = "tension_bomb"
+event_type = "played"
+fields = {
+"pattern.kind": "bomb"
+}
+stream = ExtResource("30_seny3")
+channel = "music"
+volume_db = -24.0
+
+[sub_resource type="Resource" id="Resource_h107d"]
+script = ExtResource("cue")
+id = "tension_rocket"
+event_type = "played"
+fields = {
+"pattern.kind": "rocket"
+}
+stream = ExtResource("30_seny3")
+channel = "music"
+volume_db = -24.0
+
 [resource]
 script = ExtResource("layout")
 table_texture = ExtResource("table")
 card_face = ExtResource("face")
+card_back = ExtResource("3_4vsvm")
+background_music = ExtResource("1_ya380")
 card_artwork = {
 "52": ExtResource("joker"),
 "53": ExtResource("joker")
@@ -500,4 +693,4 @@ cards = {
 "title": "5"
 }
 }
-cues = Array[ExtResource("cue")]([SubResource("cue_0"), SubResource("cue_1"), SubResource("cue_2"), SubResource("cue_3"), SubResource("cue_4"), SubResource("cue_5"), SubResource("cue_6"), SubResource("cue_7"), SubResource("cue_8"), SubResource("cue_9")])
+cues = Array[ExtResource("cue")]([SubResource("cue_0"), SubResource("cue_1"), SubResource("cue_2"), SubResource("cue_3"), SubResource("cue_4"), SubResource("cue_5"), SubResource("cue_6"), SubResource("cue_7"), SubResource("cue_8"), SubResource("cue_9"), SubResource("Resource_3mqkx"), SubResource("Resource_nnxv8"), SubResource("Resource_wpplw"), SubResource("Resource_r7oa6"), SubResource("Resource_q6ju8"), SubResource("Resource_wx4gv"), SubResource("Resource_ts8yw"), SubResource("Resource_grk2f"), SubResource("Resource_4ook6"), SubResource("Resource_ibucy"), SubResource("Resource_ldvwe"), SubResource("Resource_cm80f"), SubResource("Resource_1vdco"), SubResource("Resource_4mh2s"), SubResource("Resource_dn0oa"), SubResource("Resource_h107d")])

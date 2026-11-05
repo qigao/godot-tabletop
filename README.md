@@ -24,12 +24,20 @@ Chess, Xiangqi, and additional card games need their own rule adapters and views
 ![DouDiZhu local client](docs/images/client-doudizhu.png)
 ![Gomoku local client](docs/images/client-gomoku.png)
 
+## Interaction baseline
+
+Card interaction is part of client acceptance. The DouDiZhu example now includes a curved hand with stable hover hits and raised selection, mouse/touch range selection, group drag-to-play with legal target feedback, relative player badges/counts, public bottom/played cards, sequential dealing/reveal/play motion, active countdown, configured pattern/low-card feedback and looping music, plus a result panel with new-round/close actions.
+
+**Motion on/off**, **Skip motion**, pointer thresholds, seat anchors, timing and event/media mappings are configurable. Rule-complete play is only one part of acceptance. See [the reference behavior mapping and interaction checks](docs/INTERACTION.md).
+
+![Actual client interaction capture](docs/images/client-interactions.gif)
+
 ## Run
 
 Open `project.godot` with Godot 4.6-stable and press F5.
 
 1. Choose a game and seed, then **New table**. Use the tabs to switch games without losing their progress.
-2. DouDiZhu: bid, select cards, then **Play selected** or **Pass**. **Next legal play** selects an available play without executing it. Click/tap/Space selects a card; left/right moves keyboard focus.
+2. DouDiZhu: bid, select cards, then **Play selected** or **Pass**. **Next legal play** selects an available play without executing it. Click/tap/Space selects a card; sliding selects a range, dragging onto the table plays a legal selection, right-click/Escape clears, and Shift+arrows extends keyboard selection.
 3. Gomoku: click/tap an intersection, or navigate with arrows and place with Enter/Space.
 4. Use **Undo**, **Redo**, or the move slider to review history. A new accepted move from an earlier position discards the old redo tail.
 5. **Save replay** saves the full timeline, including the redo tail while reviewing. **Load replay** opens a new independent table at the end of that archive.
@@ -42,7 +50,7 @@ This is local hotseat: pass the device between players. Replay archives contain 
 
 Successful [Godot workflow runs](https://github.com/qigao/godot-tabletop/actions/workflows/godot.yml) publish `Tabletop-Linux`, `Tabletop-Windows`, and `Tabletop-macOS` artifacts. Download and extract the artifact, then extract the enclosed client ZIP and run `RunTabletop.sh`, `RunTabletop.cmd`, or `RunTabletop.command`.
 
-Each bundle includes the project PCK and the verified official standard Godot runtime. It uses the editor-capable runtime; it is a development client rather than a stripped release export. The scene suite also runs against the PCK before packaging. Signed desktop distribution, browser/mobile exports, and physical touchscreen acceptance remain separate work in [#2](https://github.com/qigao/godot-tabletop/issues/2).
+Each bundle includes the project PCK and the verified official standard Godot runtime. It uses the editor-capable runtime; it is a development client rather than a stripped release export. The scene and real viewport interaction suites also run against the PCK before packaging. Signed desktop distribution, browser/mobile exports, and physical touchscreen acceptance remain separate work in [#2](https://github.com/qigao/godot-tabletop/issues/2).
 
 ## Check
 
@@ -52,9 +60,9 @@ python scripts/check.py /absolute/path/to/Godot
 
 The runner imports the project and executes the rule, legal-action, local client, and real addon scene suites. It rejects script errors even when Godot exits zero. CI runs the same checks and PCK scene acceptance on Linux, Windows, and macOS. Official standard engine archives are pinned, verified, and downloaded with `curl`.
 
-Acceptance covers 32 complete seeded single/pass DouDiZhu matches, 96 complete mixed-combination matches with all 14 kinds played, bounded exhaustive legal-action comparisons, 935 pinned upstream action fixtures, Gomoku wins and a 225-move draw, JSON round trips, independent tables, history branching, malformed archives, scoped input, native scene lifecycle, and resize. Three additional complete DouDiZhu games run through the configured controls, and a string-card fixture reuses the same renderer. Media checks cover real imported resources, live cues and silent history navigation. These match drivers are tests. They do not provide production AI.
+Acceptance covers 32 complete seeded single/pass DouDiZhu matches, 96 complete mixed-combination matches with all 14 kinds played, bounded exhaustive legal-action comparisons, 935 pinned upstream action fixtures, Gomoku wins and a 225-move draw, JSON round trips, independent tables, history branching, malformed archives, scoped input, native scene lifecycle, and resize. Actual viewport scenarios additionally cover motion, pointer gestures, legal drops, timer/lifecycle cancellation and settlement. Three additional complete DouDiZhu games run through the configured controls, and a string-card fixture reuses the same renderer. Media checks cover real imported resources, live cues and silent history navigation. These match drivers are tests. They do not provide production AI.
 
-Linux CI additionally renders the actual desktop client at 1280 × 800 and 800 × 600, publishing `Client-layouts`. The committed images are real local OpenGL captures. Automated event injection and rendered screenshots do not establish physical device input acceptance.
+Linux CI additionally renders the actual desktop client at 1280 × 800 and 800 × 600 and records an interaction GIF, publishing `Client-layouts`. The committed images are real local OpenGL captures. Automated event injection and rendered screenshots do not establish physical device input acceptance.
 
 ## Structure
 

@@ -19,6 +19,8 @@ var close_button: Button
 var save_button: Button
 var sound_button: Button
 var sound_enabled := true
+var motion_button: Button
+var reduced_motion := false
 var history: HSlider
 var history_label: Label
 var status_label: Label
@@ -73,6 +75,7 @@ func _build_ui() -> void:
 	save_button = TabletopUI.button(toolbar, "Save replay", _save_replay)
 	TabletopUI.button(toolbar, "Load replay", func() -> void: load_dialog.popup_centered_ratio(0.8))
 	sound_button = TabletopUI.button(toolbar, "Sound on", _toggle_sound)
+	motion_button = TabletopUI.button(toolbar, "Motion on", _toggle_motion)
 	var timeline := HBoxContainer.new()
 	column.add_child(timeline)
 	history_label = TabletopUI.label("", 14)
@@ -144,8 +147,11 @@ func _refresh() -> void:
 		current_view.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		current_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		current_view.command_requested.connect(_on_view_command.bind(workspace.active_id))
+		current_view.lifecycle_requested.connect(_on_view_lifecycle.bind(workspace.active_id))
 		view_slot.add_child(current_view)
 		current_view.cues.muted = not sound_enabled
+		current_view.set_reduced_motion(reduced_motion)
+		current_view.restore_ui_state(workspace.view_state(workspace.active_id))
 		_view_table_id = workspace.active_id
 	current_view.present(frame)
 	pause_mask.visible = frame.paused
@@ -160,6 +166,8 @@ func _refresh() -> void:
 
 func _unmount() -> void:
 	if current_view != null:
+		if workspace.table_ids().has(_view_table_id):
+			workspace.save_view_state(_view_table_id, current_view.capture_ui_state())
 		current_view.deactivate()
 		view_slot.remove_child(current_view)
 		current_view.queue_free()
@@ -169,6 +177,14 @@ func _unmount() -> void:
 func _on_view_command(command: Dictionary, token: int, table_id: int) -> void:
 	var result := workspace.submit(table_id, command, token)
 	status_label.text = "Move accepted" if result.ok else "Move rejected: " + result.error.replace("_", " ")
+
+func _on_view_lifecycle(action: String, token: int, table_id: int) -> void:
+	if table_id != workspace.active_id or table_id == -1 or workspace.frame(table_id).token != token:
+		return
+	match action:
+		"new_round": workspace.reset_table(table_id, (int(workspace.frame(table_id).seed) + 1) & 0xffffffff)
+		"close": workspace.close_table(table_id)
+		_: assert(false, "Unknown view lifecycle request")
 
 func _on_tab_changed(index: int) -> void:
 	workspace.select_table(int(tabs.get_tab_metadata(index)))
@@ -196,6 +212,12 @@ func _toggle_sound() -> void:
 	sound_button.text = "Sound on" if sound_enabled else "Sound off"
 	if current_view != null:
 		current_view.cues.muted = not sound_enabled
+
+func _toggle_motion() -> void:
+	reduced_motion = not reduced_motion
+	motion_button.text = "Motion off" if reduced_motion else "Motion on"
+	if current_view != null:
+		current_view.set_reduced_motion(reduced_motion)
 
 func _save_replay() -> void:
 	_save_table_id = workspace.active_id

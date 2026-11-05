@@ -13,7 +13,7 @@
 - Imported path: upstream `addons/card-framework/`, copied to the same local path.
 - License: MIT, copyright 2025 Hyunjoon Park; retained verbatim at `addons/card-framework/LICENSE`.
 - Source scripts and scenes are unchanged. The upstream source archive excludes its examples/screenshots; they are not needed by the addon.
-- Local integration lives in `ui/`. Each view owns an explicit manager, factory and input scope, without registering a manager in root-scene metadata. The adapter chooses hover ownership per view, disables unused drop-zone synchronization, and balances upstream static counters when a hand is replaced or removed. The shared factory/card/hand take generic keys and display metadata; DouDiZhu-specific labels stay in its view.
+- Local integration lives in `ui/`. Each view owns an explicit manager, factory and input scope, without registering a manager in root-scene metadata. The adapter chooses hover ownership per view, disables unused drop-zone synchronization, and balances upstream static counters when a hand is replaced or removed. The shared factory/card/hand take generic keys and display metadata; game-specific bindings stay in presentation resources. Local adapters supply stable-slot input, gesture handling and composed hover/selection/motion; the pinned addon remains unchanged.
 
 ## Design and gameplay references
 
@@ -31,6 +31,8 @@ DouDiZhu/Gomoku rules, the session/replay and local client layers, presentation 
 
 ## Demonstration media
 
-- The table, card-face, joker and stone SVGs are original code-native assets created for this repository. Card/deal/stone WAV effects are original short synthesized tones.
+- The table, card-face, joker and stone SVGs are original code-native assets created for this repository. Card/deal/stone WAV effects and the looping background tracks are original synthesized audio.
 - The example speech WAVs under `games/doudizhu/assets/voice/` were generated locally with eSpeak NG 1.51 using the phrases and command documented in that directory. They are replaceable demonstration speech, not recorded third-party game audio or final production narration. No synthesizer source, executable, voice data, model weights or external recording is bundled.
 - Media is loaded from the configured game resources. Ordinary checks and client playback require no speech generation/download.
+
+The interaction baseline was independently implemented after inspecting the pinned DouDiZhu reference scripts/scenes. No code/media was copied. The exact mapping, distinction between baseline and added sweep/drop modes, and device acceptance limits are documented in `docs/INTERACTION.md`.

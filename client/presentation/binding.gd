@@ -14,6 +14,7 @@ static func read(spec: Variant, context: Dictionary) -> Variant:
 	var op: String = spec.keys()[0]
 	var argument: Variant = spec[op]
 	match op:
+		"literal": return argument
 		"get":
 			var value: Variant = context
 			for part in str(argument).split("."):

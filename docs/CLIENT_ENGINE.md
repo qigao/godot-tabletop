@@ -45,6 +45,8 @@ This is a component template system, not automatic layout inference from rules. 
 
 Copy the resource structure for another compatible card game, provide its rules and observation bindings, and register the module in `TabletopCatalog.MODULES`. The game does not need its own UI script while it fits the current components. Rules never import or load the media/layout resources.
 
+The card layout also supplies separate interaction/motion profiles, relative seat anchors, count/role bindings, public-card zones, event callouts, a local timeout policy and settlement conditions. See [INTERACTION.md](INTERACTION.md) for the mandatory baseline and customization contract.
+
 The card layout specifies `sections` (table, hand, actions, help), `seat_order`, card dimensions, hand/table heights, colors and observation text/hand bindings. Every action defines `id`, `label`, `when`, a command dictionary, `selection_field`, and `browse`. Fixed commands such as bids are enabled only when available in the rules' legal-action list. Selection commands copy the actual selected physical keys into the configured field. Browsing selects legal cards without submitting a move.
 
 Rules may enumerate a canonical representative for equivalent cards. `selection_equivalence` names a metadata field used to compare selected and legal-action multisets; DouDiZhu uses its card rank `group`. Thus choosing a different owned suit of the same rank is allowed, and its actual physical ID reaches the rules validator. Configure `numeric_card_keys` explicitly; string keys are supported by the same renderer. The acceptance fixture uses different observation names and `{action: "discard", pieces: ["red-b"]}` commands to prove reuse beyond DouDiZhu.
@@ -55,6 +57,7 @@ Bindings read detached observation/metadata values. They cannot change a session
 
 | Operator | Form / purpose |
 | --- | --- |
+| `literal` | A typed resource condition can explicitly hold a constant value, e.g. `{"literal": false}` |
 | `get` | `{"get": "observation.turn"}`: dictionary path |
 | `at` | `{"at": [collection_binding, index_binding]}`: dynamic array/dictionary index |
 | `text` | Convert a bound value to a string, including string asset keys |
@@ -73,7 +76,7 @@ Plain values are literals, and arrays recursively bind their elements. Each oper
 
 Each `TabletopAudioCue` supplies an event type, optional exact field filters (including paths such as `pattern.kind`), an `AudioStream`, channel (`effect` or `voice`) and volume. The example binds bidding/pass/outcome speech, bomb/rocket speech and card/deal effects. Speech files are local synthesized demonstration recordings; replace them with licensed game recordings through media configuration. No runtime speech generator is required.
 
-Only a successful live command contributes events to the current frame. A per-view player starts cues once per frame token, queues speech separately from effects and cancels old announcements on a new move. Pause, history seek, restart, import, switch and teardown stop/suppress historical cues. Re-rendering the same frame, legal-play browsing, rejected commands and unmuting do not replay announcements. **Sound on/off** is a local host control retained across game switches. Cues never change authoritative state or replay contents.
+Only a successful live command contributes events to the current frame. A per-view player starts cues once per frame token, queues voice and warning narration separately from effects and looping background music and cancels old announcements on a new move. Pause, history seek, restart, import, switch and teardown stop/suppress historical cues. Re-rendering the same frame, legal-play browsing, rejected commands and unmuting do not replay announcements. **Sound on/off** is a local host control retained across game switches. Cues never change authoritative state or replay contents.
 
 ## Extending the component set
 
@@ -91,6 +94,6 @@ Loading validates the complete JSON archive first and attaches a new table only 
 
 Exercise real legal/illegal transitions, rejection atomicity, terminal outcomes, observation isolation, legal-action IDs, full JSON replay, independent interleaved matches, common history controls and the mounted view. Include rule-specific boundaries rather than mirroring the implementation.
 
-The current suites include three complete DouDiZhu matches played through configured controls, a second string-card engine using the same renderer, media cue routing/suppression, and a full 225-move Gomoku draw, two engine types in one workspace, two simultaneous card views, real Godot mouse/touch/key event paths, stale queued input, save/load, resize and teardown. Packaging reruns the actual scene suite from the generated PCK. Linux OpenGL captures verify the actual scenes at desktop and compact sizes.
+The current suites include three complete DouDiZhu matches played through configured controls, a second string-card engine using the same renderer, media cue routing/suppression, real viewport gesture/motion/clock/result scenarios (also run against PCK), and a full 225-move Gomoku draw, two engine types in one workspace, two simultaneous card views, real Godot mouse/touch/key event paths, stale queued input, save/load, resize and teardown. Packaging reruns the actual scene suite from the generated PCK. Linux OpenGL captures verify the actual scenes at desktop and compact sizes.
 
 Physical mouse/touch devices, DPI/OS behavior and signed/mobile/web distribution require their own acceptance in [#2](https://github.com/qigao/godot-tabletop/issues/2). For manual acceptance, create both games, play legal and rejected moves, review/branch/save/load, switch a hovered card hand to the board, resize, pause/resume, close all tables and create again. Touch must activate toolbar controls and each game move exactly once. Automated injection does not close that physical-device task.
