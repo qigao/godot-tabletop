@@ -10,7 +10,7 @@ The current deliverable is a Godot 4 client engine for local card and board game
 | `TabletopSession` | One authoritative state, command revision, accepted log | Which Godot view is mounted |
 | `TabletopLocalTable` | One session, full command timeline, review cursor, pause, UI frame token | Card or board-specific commands |
 | `TabletopWorkspace` | Independent tables, active table, creation/switch/close, validated replay import | Rules or rendering for an individual game |
-| `TabletopGameModule` | Identity, seat count, rules script, view scene | A global live match |
+| `TabletopGameModule` | Identity, seat count, rules script, view scene and presentation resource | A global live match |
 | `TabletopGameView` | Observation rendering and command requests | Authoritative state mutation |
 | `tabletop_app.gd` | Tabs, toolbar, history slider, dialogs, mounting the registered view | Game-specific state fields or move types |
 
@@ -34,11 +34,13 @@ Pause blocks gameplay commands and displays an overlay. Review and common lifecy
 
 ## Presentation and input
 
-A module descriptor pairs the rules adapter with a `TabletopGameView` scene. The catalog registers descriptors. The host always mounts through this contract and does not branch on game identity.
+A module descriptor pairs the rules adapter with a `TabletopGameView` scene and typed presentation resource. Card-table and placement-board renderers/configurations are separate families. DouDiZhu and Gomoku use those shared scenes without individual game view scripts. Declarative value bindings translate observations into labels, hands and pieces, while legal actions enable configured controls. The catalog registers descriptors; the host mounts them without game/family branches. New interactions need a new component rather than rule-specific conditionals in the host. See CLIENT_ENGINE.md for the exact configuration boundary.
 
 The card integration extends the pinned Card Framework outside its source tree. Each rendered card table owns an explicit manager and `TabletopInputScope`; it does not register a manager in root-scene metadata. The local hover scope chooses the hovered card, while adapter cleanup balances upstream static counters. Two live card views are exercised together and destroying one leaves the other's scope intact. Visual drag/drop cannot transfer cards around the rules authority.
 
 The reusable card factory takes arbitrary string keys and display metadata. DouDiZhu rank/suit conversion belongs to its view, not the shared factory, card or hand. The board widget renders a configurable intersection grid, piece colors/text, focus, last-move and line highlights; its activated cell is interpreted by the game view. A game can supply a different widget while retaining the same view contract.
+
+Media resources map table/card/piece artwork and local event cues. Only successful live commands provide events; invalidated/reviewed frames clear them. Each view deduplicates cue playback by token and owns independent effect/voice queues. Switching, seeking, restart, import and pause do not announce old events. Cues never decide transitions or alter replay. The host keeps a common sound toggle across game switches.
 
 Native touch events activate custom cards/boards once. Emulated mouse events remain enabled for ordinary Godot toolbar controls; custom widgets ignore that duplicate mouse path. Keyboard focus and common client shortcuts coexist. Layout uses containers and a scrollable game slot with a 640 × 480 minimum desktop window.
 

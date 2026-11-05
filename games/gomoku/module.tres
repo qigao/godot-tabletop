@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="TabletopGameModule" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="TabletopGameModule" format=3]
 
 [ext_resource type="Script" path="res://client/game_module.gd" id="1"]
 [ext_resource type="Script" path="res://games/gomoku/rules.gd" id="2"]
-[ext_resource type="PackedScene" path="res://ui/views/gomoku_view.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://ui/boards/placement_board_view.tscn" id="3"]
+[ext_resource type="Resource" path="res://games/gomoku/presentation.tres" id="4"]
 
 [resource]
 script = ExtResource("1")
@@ -12,3 +13,4 @@ kind = "board"
 seat_count = 2
 rules_script = ExtResource("2")
 view_scene = ExtResource("3")
+presentation = ExtResource("4")

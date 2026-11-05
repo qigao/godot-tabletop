@@ -16,7 +16,7 @@ func create_table(game_id: String, seed: int) -> int:
 
 func _attach(table: TabletopLocalTable) -> int:
 	if active_id != -1:
-		_tables[active_id].token += 1
+		_tables[active_id].invalidate_frame()
 	var id := _next_id
 	_next_id += 1
 	_tables[id] = table
@@ -41,8 +41,8 @@ func frame(id: int) -> Dictionary:
 func select_table(id: int) -> void:
 	assert(_tables.has(id), "Unknown local table")
 	if active_id != -1 and active_id != id:
-		_tables[active_id].token += 1
-	_tables[id].token += 1
+		_tables[active_id].invalidate_frame()
+	_tables[id].invalidate_frame()
 	active_id = id
 	changed.emit()
 

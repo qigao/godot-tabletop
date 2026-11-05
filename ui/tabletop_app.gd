@@ -17,6 +17,8 @@ var reset_button: Button
 var pause_button: Button
 var close_button: Button
 var save_button: Button
+var sound_button: Button
+var sound_enabled := true
 var history: HSlider
 var history_label: Label
 var status_label: Label
@@ -70,6 +72,7 @@ func _build_ui() -> void:
 	close_button = TabletopUI.button(toolbar, "Close table", _close)
 	save_button = TabletopUI.button(toolbar, "Save replay", _save_replay)
 	TabletopUI.button(toolbar, "Load replay", func() -> void: load_dialog.popup_centered_ratio(0.8))
+	sound_button = TabletopUI.button(toolbar, "Sound on", _toggle_sound)
 	var timeline := HBoxContainer.new()
 	column.add_child(timeline)
 	history_label = TabletopUI.label("", 14)
@@ -142,6 +145,7 @@ func _refresh() -> void:
 		current_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		current_view.command_requested.connect(_on_view_command.bind(workspace.active_id))
 		view_slot.add_child(current_view)
+		current_view.cues.muted = not sound_enabled
 		_view_table_id = workspace.active_id
 	current_view.present(frame)
 	pause_mask.visible = frame.paused
@@ -186,6 +190,12 @@ func _toggle_pause() -> void:
 
 func _close() -> void:
 	workspace.close_table(workspace.active_id)
+
+func _toggle_sound() -> void:
+	sound_enabled = not sound_enabled
+	sound_button.text = "Sound on" if sound_enabled else "Sound off"
+	if current_view != null:
+		current_view.cues.muted = not sound_enabled
 
 func _save_replay() -> void:
 	_save_table_id = workspace.active_id

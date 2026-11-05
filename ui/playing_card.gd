@@ -21,6 +21,12 @@ func _draw() -> void:
 	shape.set_border_width_all(4 if selected else 1)
 	shape.set_corner_radius_all(9)
 	draw_style_box(shape, Rect2(Vector2.ZERO, card_size))
+	if card_info.face_texture != null:
+		draw_texture_rect(card_info.face_texture, Rect2(Vector2.ZERO, card_size), false)
+		shape.bg_color = Color.TRANSPARENT
+		draw_style_box(shape, Rect2(Vector2.ZERO, card_size))
+	if card_info.artwork != null:
+		draw_texture_rect(card_info.artwork, Rect2(Vector2(8, 55), card_size - Vector2(16, 65)), false)
 	var ink: Color = card_info.ink
 	var font := ThemeDB.fallback_font
 	draw_string(font, Vector2(7, 25), card_info.title, HORIZONTAL_ALIGNMENT_LEFT, -1, 19, ink)

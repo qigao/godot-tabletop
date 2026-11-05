@@ -1,0 +1,292 @@
+[gd_resource type="Resource" script_class="TabletopCardTableLayout" format=3]
+
+[ext_resource type="Script" path="res://client/presentation/card_table_layout.gd" id="layout"]
+[ext_resource type="Resource" path="res://games/doudizhu/media.tres" id="media"]
+
+[resource]
+script = ExtResource("layout")
+sections = PackedStringArray("table", "hand", "actions", "help")
+seat_order = PackedInt32Array(0, 1, 2)
+table_color = Color(0.067, 0.18, 0.21, 1)
+accent_color = Color(0.97, 0.78, 0.42, 1)
+hand_binding = {
+"at": [{
+"get": "observation.hands"
+}, {
+"get": "observation.turn"
+}]
+}
+active_seat_binding = {
+"get": "observation.turn"
+}
+seat_text = {
+"format": ["Seat %d  /  %s
+%d cards", {
+"get": "seat_number"
+}, {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}, {
+"format": ["Bid: %s", {
+"if": [{
+"eq": [{
+"at": [{
+"get": "observation.bids"
+}, {
+"get": "seat"
+}]
+}, -1]
+}, "-", {
+"at": [{
+"get": "observation.bids"
+}, {
+"get": "seat"
+}]
+}]
+}]
+}, {
+"if": [{
+"eq": [{
+"get": "observation.landlord"
+}, {
+"get": "seat"
+}]
+}, "Landlord", "Farmer"]
+}]
+}, {
+"at": [{
+"get": "observation.hand_counts"
+}, {
+"get": "seat"
+}]
+}]
+}
+status_text = {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "finished"]
+}, {
+"if": [{
+"eq": [{
+"get": "observation.winner"
+}, {
+"get": "observation.landlord"
+}]
+}, "Landlord wins", "Farmers win"]
+}, {
+"format": ["Seat %d to %s", {
+"at": [[1, 2, 3], {
+"get": "observation.turn"
+}]
+}, {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}, "bid", "play"]
+}]
+}]
+}
+table_text = {
+"if": [{
+"empty": {
+"get": "observation.last_cards"
+}
+}, "A new trick", {
+"join": ["  ", {
+"map": [{
+"get": "observation.last_cards"
+}, {
+"at": [{
+"at": [{
+"get": "assets.cards"
+}, {
+"text": {
+"get": "item"
+}
+}]
+}, "label"]
+}]
+}]
+}]
+}
+detail_text = {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "finished"]
+}, {
+"format": ["Multiplier x%d  /  Scores: %s", {
+"get": "observation.multiplier"
+}, {
+"get": "observation.scores"
+}]
+}, {
+"if": [{
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}, {
+"format": ["Highest bid: %d", {
+"get": "observation.highest_bid"
+}]
+}, {
+"if": [{
+"empty": {
+"get": "observation.last_pattern"
+}
+}, {
+"format": ["Multiplier x%d  /  Bottom: %s", {
+"get": "observation.multiplier"
+}, {
+"join": ["  ", {
+"map": [{
+"get": "observation.bottom"
+}, {
+"at": [{
+"at": [{
+"get": "assets.cards"
+}, {
+"text": {
+"get": "item"
+}
+}]
+}, "label"]
+}]
+}]
+}]
+}, {
+"format": ["Multiplier x%d  /  %s  /  Bottom: %s", {
+"get": "observation.multiplier"
+}, {
+"get": "observation.last_pattern.kind"
+}, {
+"join": ["  ", {
+"map": [{
+"get": "observation.bottom"
+}, {
+"at": [{
+"at": [{
+"get": "assets.cards"
+}, {
+"text": {
+"get": "item"
+}
+}]
+}, "label"]
+}]
+}]
+}]
+}]
+}]
+}]
+}
+selection_text = {
+"format": ["%d selected / %d legal plays", {
+"get": "selection_count"
+}, {
+"get": "legal_count"
+}]
+}
+help_text = "Click / tap / Space: select  |  Arrow keys: next card  |  Local hotseat: pass the device"
+actions = Array[Dictionary]([{
+"browse": false,
+"command": {
+"type": "bid",
+"value": 0
+},
+"id": "bid_0",
+"label": "No bid",
+"selection_field": "",
+"when": {
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}
+}, {
+"browse": false,
+"command": {
+"type": "bid",
+"value": 1
+},
+"id": "bid_1",
+"label": "Bid 1",
+"selection_field": "",
+"when": {
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}
+}, {
+"browse": false,
+"command": {
+"type": "bid",
+"value": 2
+},
+"id": "bid_2",
+"label": "Bid 2",
+"selection_field": "",
+"when": {
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}
+}, {
+"browse": false,
+"command": {
+"type": "bid",
+"value": 3
+},
+"id": "bid_3",
+"label": "Bid 3",
+"selection_field": "",
+"when": {
+"eq": [{
+"get": "observation.phase"
+}, "bidding"]
+}
+}, {
+"browse": false,
+"command": {
+"type": "play"
+},
+"id": "play",
+"label": "Play selected",
+"selection_field": "cards",
+"when": {
+"eq": [{
+"get": "observation.phase"
+}, "playing"]
+}
+}, {
+"browse": false,
+"command": {
+"type": "pass"
+},
+"id": "pass",
+"label": "Pass",
+"selection_field": "",
+"when": {
+"eq": [{
+"get": "observation.phase"
+}, "playing"]
+}
+}, {
+"browse": true,
+"command": {
+"type": "play"
+},
+"id": "browse",
+"label": "Next legal play",
+"selection_field": "cards",
+"when": {
+"eq": [{
+"get": "observation.phase"
+}, "playing"]
+}
+}])
+selection_equivalence = "group"
+media = ExtResource("media")

@@ -28,3 +28,9 @@ DouDiZhu/Gomoku rules, the session/replay and local client layers, presentation 
 - `tests/fixtures/douzero_actions.json` records the upstream commit and SHA-256 hashes of `douzero/env/utils.py` and `move_generator.py`, along with 10 synthetic hands and 935 generated rank actions. No upstream Python source, model weights, or training data is bundled.
 - `scripts/update_douzero_oracle.py` verifies the two pinned source hashes and regenerates the fixture from an explicitly supplied checkout/archive. Ordinary checks use the committed fixture and do not download or install DouZero.
 - The six expected profile exclusions are recorded explicitly, rather than hidden by filtering upstream results through this project's classifier. See `docs/DOUZERO_ACTIONS.md`.
+
+## Demonstration media
+
+- The table, card-face, joker and stone SVGs are original code-native assets created for this repository. Card/deal/stone WAV effects are original short synthesized tones.
+- The example speech WAVs under `games/doudizhu/assets/voice/` were generated locally with eSpeak NG 1.51 using the phrases and command documented in that directory. They are replaceable demonstration speech, not recorded third-party game audio or final production narration. No synthesizer source, executable, voice data, model weights or external recording is bundled.
+- Media is loaded from the configured game resources. Ordinary checks and client playback require no speech generation/download.

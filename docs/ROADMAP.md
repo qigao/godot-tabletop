@@ -21,6 +21,17 @@ The user requested completion of the reusable local client before remote rooms o
 
 The exact implementation commit and three-platform CI result are recorded in the pull request and tracking issue. Automation verifies event routing and actual scene rendering; it does not establish physical touchscreen behavior.
 
+## Configured presentation ([#9](https://github.com/qigao/godot-tabletop/issues/9))
+
+- [x] Separate card-table and placement-board resource schemas and renderers.
+- [x] Declarative observation/seat/selection bindings and legal-action-driven controls.
+- [x] DouDiZhu and Gomoku converted to configuration without individual game view scripts.
+- [x] Replaceable card/table/piece images and event-driven local voice/effect streams.
+- [x] Per-view cue ownership, mute, cancellation and silent history/import/switch behavior.
+- [x] Three complete configured DouDiZhu games, second string-card engine reuse and imported-asset acceptance.
+
+This covers the current components. New chess-style piece/move interactions require a separate board component; a rules script cannot infer layout. Physical speaker/input and production voice/art quality remain device/product acceptance. Exact-HEAD three-platform results are recorded in the PR and issue.
+
 ## Accepted rule/action evidence
 
 - 32 complete seeded single/pass DouDiZhu matches.

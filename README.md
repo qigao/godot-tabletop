@@ -7,19 +7,19 @@ A Godot 4 local client engine for multiple card and board games. **DouDiZhu and 
 ## Local client
 
 - Godot **4.6-stable**, standard GDScript build, Compatibility renderer; no Mono.
-- Register each game as a module containing its rules adapter and view scene. The host has no game-specific command or state branches.
+- Register rules + layout/interaction configuration + artwork/audio as a module. Card tables and placement boards use separate shared renderers; the host has no game-specific branches. DouDiZhu and Gomoku have no individual view scripts.
 - Create, switch, restart, pause, and close independent local tables, including different games in one workspace.
 - Undo, redo, seek through accepted commands, and branch by playing from an earlier position.
 - Save a complete JSON replay with a file picker; load it as a new table. Invalid archives leave all live tables unchanged.
 - Reject commands queued by an old view after a move, switch, history seek, pause, restart, or close.
-- Reusable card presentation with per-view input ownership, and an independent grid/piece widget. Mouse, touch, and keyboard paths are exercised in the actual scenes.
+- Reusable card-table and placement-board templates, declarative observation bindings, per-view input ownership and legal-action-driven controls. Images and event-driven speech/effects are replaceable resources; **Sound on/off** persists across games. Mouse, touch, and keyboard paths are exercised in actual scenes.
 
 | Game | Implemented profile |
 | --- | --- |
 | DouDiZhu | Three-seat hotseat, bidding and redeal, 14 combination types, legal-play browser, pass/trick reset, multipliers, spring and scoring |
 | Gomoku | Two-seat hotseat, 15 × 15 freestyle board, five or more connected stones wins, four line directions, full-board draw, winning-line display |
 
-Chess, Xiangqi, and additional card games need their own rule adapters and views. The client contract does not assume cards, a landlord, or placement-only commands. See [how to add a game](docs/CLIENT_ENGINE.md).
+Chess, Xiangqi, and additional card games need their own rule adapters and views. The common client contract does not assume cards or a landlord. The current board template supports placement; chess-style select-piece/move interactions require a separate component. See [how to add a game](docs/CLIENT_ENGINE.md).
 
 ![DouDiZhu local client](docs/images/client-doudizhu.png)
 ![Gomoku local client](docs/images/client-gomoku.png)
@@ -52,7 +52,7 @@ python scripts/check.py /absolute/path/to/Godot
 
 The runner imports the project and executes the rule, legal-action, local client, and real addon scene suites. It rejects script errors even when Godot exits zero. CI runs the same checks and PCK scene acceptance on Linux, Windows, and macOS. Official standard engine archives are pinned, verified, and downloaded with `curl`.
 
-Acceptance covers 32 complete seeded single/pass DouDiZhu matches, 96 complete mixed-combination matches with all 14 kinds played, bounded exhaustive legal-action comparisons, 935 pinned upstream action fixtures, Gomoku wins and a 225-move draw, JSON round trips, independent tables, history branching, malformed archives, scoped input, native scene lifecycle, and resize. These match drivers are tests. They do not provide production AI.
+Acceptance covers 32 complete seeded single/pass DouDiZhu matches, 96 complete mixed-combination matches with all 14 kinds played, bounded exhaustive legal-action comparisons, 935 pinned upstream action fixtures, Gomoku wins and a 225-move draw, JSON round trips, independent tables, history branching, malformed archives, scoped input, native scene lifecycle, and resize. Three additional complete DouDiZhu games run through the configured controls, and a string-card fixture reuses the same renderer. Media checks cover real imported resources, live cues and silent history navigation. These match drivers are tests. They do not provide production AI.
 
 Linux CI additionally renders the actual desktop client at 1280 × 800 and 800 × 600, publishing `Client-layouts`. The committed images are real local OpenGL captures. Automated event injection and rendered screenshots do not establish physical device input acceptance.
 
@@ -64,7 +64,8 @@ Linux CI additionally renders the actual desktop client at 1280 × 800 and 800 �
 | `client/` | Module/view contracts, local table lifecycle, workspace and history |
 | `games/` | Separate game profiles and module descriptors |
 | `ui/tabletop_app.gd` | Generic workspace host, toolbar, tabs, replay dialogs |
-| `ui/views/` | Game-specific observation and command adapters |
+| `ui/cards/`, `ui/boards/` | Separate configurable card-table and placement-board renderers |
+| `client/presentation/` | Layout/media resources, value bindings and local cue playback |
 | `ui/widgets/`, `ui/card_*.gd`, `ui/selection_hand.gd` | Reusable board/card presentation and scoped input |
 | `addons/card-framework/` | Pinned upstream MIT addon |
 | `tests/` | Rules, local engine, replay, scene/input and native render acceptance |

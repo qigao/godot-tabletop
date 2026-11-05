@@ -8,6 +8,7 @@ var token := 1
 var cursor := 0
 var _session: TabletopSession
 var _timeline: Array[Dictionary] = []
+var _events: Array = []
 
 func _init(game_module: TabletopGameModule, seed: int) -> void:
 	module = game_module
@@ -20,6 +21,7 @@ func frame() -> Dictionary:
 	return {"game_id": module.id, "title": module.title, "seed": seed_value,
 			"token": token, "paused": paused, "seat": seat,
 			"cursor": cursor, "length": _timeline.size(),
+			"events": _events.duplicate(true),
 			"observation": _session.observe(seat), "legal_actions": _session.legal_actions(seat)}
 
 func submit(command: Dictionary, expected_token: int) -> Dictionary:
@@ -33,6 +35,7 @@ func submit(command: Dictionary, expected_token: int) -> Dictionary:
 		_timeline.resize(cursor)
 		_timeline.append({"seat": seat, "command": command.duplicate(true)})
 		cursor += 1
+		_events = result.events.duplicate(true)
 		token += 1
 	return result
 
@@ -45,7 +48,7 @@ func seek(position: int) -> Dictionary:
 	assert(restored.ok, "Committed local history must replay")
 	_session = restored.session
 	cursor = position
-	token += 1
+	invalidate_frame()
 	return {"ok": true}
 
 func reset(seed: int) -> void:
@@ -54,11 +57,15 @@ func reset(seed: int) -> void:
 	_timeline.clear()
 	cursor = 0
 	paused = false
-	token += 1
+	invalidate_frame()
 
 func set_paused(value: bool) -> void:
 	paused = value
+	invalidate_frame()
+
+func invalidate_frame() -> void:
 	token += 1
+	_events.clear()
 
 func export_replay() -> Dictionary:
 	return {"schema": 1, "game_id": module.id, "rules_revision": _session.rules.rules_revision(),
@@ -68,7 +75,7 @@ func adopt_replay(archive: Dictionary, restored: TabletopSession) -> void:
 	_session = restored
 	_timeline.assign(archive.commands.duplicate(true))
 	cursor = _timeline.size()
-	token += 1
+	invalidate_frame()
 
 func snapshot() -> Dictionary:
 	return _session.authoritative_snapshot()

@@ -12,23 +12,23 @@ func _run() -> void:
 	root.add_child(app)
 	current_scene = app
 	await process_frame
-	app.current_view._on_bid(3)
-	app.current_view._on_cycle()
+	app.current_view.activate("bid_3")
+	app.current_view.activate("browse")
 	await create_timer(0.8).timeout
 	await RenderingServer.frame_post_draw
 	DirAccess.make_dir_recursive_absolute("res://docs/images")
-	root.get_texture().get_image().save_png("res://docs/images/client-doudizhu.png")
+	assert(root.get_texture().get_image().save_png("res://docs/images/client-doudizhu.png") == OK)
 	app.game_picker.select(1)
 	app._new_table()
 	for cell in [112,113,97,127,82,98]:
 		app.current_view.board.cell_activated.emit(cell)
 	await create_timer(0.3).timeout
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://docs/images/client-gomoku.png")
+	assert(root.get_texture().get_image().save_png("res://docs/images/client-gomoku.png") == OK)
 	root.size = Vector2i(800, 600)
 	await create_timer(0.3).timeout
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://docs/images/client-compact.png")
+	assert(root.get_texture().get_image().save_png("res://docs/images/client-compact.png") == OK)
 	app.queue_free()
 	await process_frame
 	quit()
