@@ -1,8 +1,8 @@
 # Upstream sources and reuse boundary
 
-## Bundled development runtime
+## Bundled Godot runtime
 
-- CI client bundles include the verified official standard Godot 4.6-stable executable, without modifying it.
+- Linux and macOS development bundles include the verified official standard Godot 4.6-stable executable. The Windows x64 bundle embeds the project pack into the verified official Godot 4.6-stable release template using the Godot exporter.
 - Godot's MIT notice and bundled third-party notices are copied verbatim from the `4.6-stable` source tag into `licenses/GODOT_LICENSE.txt` and `licenses/GODOT_COPYRIGHT.txt`. Both files accompany the runtime in each client bundle.
 - These notices describe the official engine distribution; this repository does not vendor or modify the engine's source.
 

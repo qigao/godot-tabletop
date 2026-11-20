@@ -56,6 +56,41 @@ jobs:
           PY
       - name: Import, rules, replay, and real addon scene
         run: python scripts/check.py "$RUNNER_TEMP/godot/${{ matrix.binary }}"
+      - name: Cache Windows release template
+        if: runner.os == 'Windows'
+        id: windows-template
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/windows_release_x86_64.exe
+          key: godot-4.6-stable-windows-release-f9cb815a32a1
+      - name: Prepare verified Godot Windows release template
+        if: runner.os == 'Windows'
+        env:
+          TEMPLATE_CACHED: ${{ steps.windows-template.outputs.cache-hit }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, os, shutil, subprocess, zipfile
+          root = Path(os.environ['RUNNER_TEMP'])
+          template = root / 'windows_release_x86_64.exe'
+          if os.environ['TEMPLATE_CACHED'] != 'true':
+              archive = root / 'godot-templates.tpz'
+              subprocess.run([
+                  'curl', '--fail', '--location', '--silent', '--show-error', '--output', str(archive),
+                  'https://github.com/godotengine/godot-builds/releases/download/4.6-stable/Godot_v4.6-stable_export_templates.tpz',
+              ], check=True)
+              with archive.open('rb') as downloaded:
+                  if hashlib.file_digest(downloaded, 'sha256').hexdigest() != '3b30ac8c1772f25f5dfa5f65922cab0a90e7b960176891237c5772515ebccc46':
+                      raise SystemExit('Godot template archive checksum mismatch')
+              with zipfile.ZipFile(archive) as pack, pack.open('templates/' + template.name) as source, template.open('wb') as target:
+                  shutil.copyfileobj(source, target)
+          with template.open('rb') as source:
+              if hashlib.file_digest(source, 'sha256').hexdigest() != 'f9cb815a32a1ae3a73ad8699ed2b068cb76fe01636d7e8538243056fac05f37b':
+                  raise SystemExit('Godot Windows release template checksum mismatch')
+          destination = Path(os.environ['APPDATA']) / 'Godot/export_templates/4.6.stable'
+          destination.mkdir(parents=True, exist_ok=True)
+          shutil.copyfile(template, destination / template.name)
+          PY
       - name: Package and accept runnable client
         run: python scripts/package_client.py "$RUNNER_TEMP/godot/${{ matrix.binary }}" "$RUNNER_TEMP/godot" "${{ runner.os }}" "exports/Tabletop-${{ runner.os }}.zip"
       - name: Upload local client bundle
