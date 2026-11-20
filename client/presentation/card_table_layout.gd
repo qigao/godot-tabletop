@@ -12,6 +12,9 @@ extends TabletopPresentation
 @export var minimum_height := 490.0
 @export var table_color := Color("112e36")
 @export var accent_color := Color("f7c66b")
+@export var ui_theme: Theme
+@export var cover_table_texture := false
+@export var center_actions := false
 @export var hand_binding: Dictionary
 @export var active_seat_binding: Dictionary
 @export var seat_text: Dictionary

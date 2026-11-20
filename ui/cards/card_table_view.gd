@@ -47,6 +47,7 @@ func _ready() -> void:
 	layout = configuration as TabletopCardTableLayout
 	assert(layout != null and layout.seat_anchors.size() == layout.seat_order.size())
 	assert(not layout.interaction.drag_to_play or not layout.interaction.drop_action.is_empty())
+	theme = layout.ui_theme
 	custom_minimum_size.y = layout.minimum_height
 	var column := VBoxContainer.new()
 	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -79,6 +80,7 @@ func _ready() -> void:
 func _build_table(column: VBoxContainer) -> void:
 	surface = TabletopSurface.new()
 	surface.texture = layout.media.table_texture
+	surface.cover_texture = layout.cover_table_texture
 	surface.custom_minimum_size.y = layout.table_height
 	surface.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	surface.add_theme_stylebox_override("panel", TabletopUI.panel(layout.table_color, 22))
@@ -90,6 +92,7 @@ func _build_table(column: VBoxContainer) -> void:
 	for seat in layout.seat_order:
 		var badge := TabletopSeatBadge.new()
 		badge.media = layout.media
+		badge.accent_color = layout.accent_color
 		badge.seat = seat
 		stage.add_child(badge)
 		seat_badges.append(badge)
@@ -112,6 +115,8 @@ func _build_table(column: VBoxContainer) -> void:
 		stage.add_child(row)
 		public_rows[zone.id] = row
 	clock = TabletopTurnClock.new()
+	clock.accent_color = layout.accent_color
+	clock.fill_color = layout.table_color.darkened(0.42)
 	clock.visible = layout.clock_seconds > 0
 	clock.expired.connect(_clock_expired)
 	stage.add_child(clock)
@@ -122,6 +127,7 @@ func _build_table(column: VBoxContainer) -> void:
 	_drop_hint.visible = false
 	stage.add_child(_drop_hint)
 	effect = TabletopTableEffect.new()
+	effect.fill_color = layout.table_color.darkened(0.24)
 	stage.add_child(effect)
 	surface.resized.connect(_place_table_items)
 	_place_table_items.call_deferred()
@@ -181,20 +187,25 @@ func _build_hand(column: VBoxContainer) -> void:
 func _build_actions(column: VBoxContainer) -> void:
 	var controls := HFlowContainer.new()
 	_action_row = controls
+	if layout.center_actions:
+		controls.alignment = FlowContainer.ALIGNMENT_CENTER
 	controls.add_theme_constant_override("h_separation", 10)
 	column.add_child(controls)
 	for spec in layout.actions:
 		assert(not _specs.has(spec.id))
 		_specs[spec.id] = spec
 		_cycles[spec.id] = 0
-		action_buttons[spec.id] = TabletopUI.button(controls, spec.label, activate.bind(spec.id))
+		var button := TabletopUI.button(controls, spec.label, activate.bind(spec.id))
+		if spec.get("primary", false):
+			button.theme_type_variation = &"TabletopPrimaryButton"
+		action_buttons[spec.id] = button
 	skip_button = TabletopUI.button(controls, "Skip motion", skip_animation)
 	skip_button.visible = false
 	TabletopUI.button(controls, "Clear", func() -> void: hand.clear_selection())
 	selection_label = TabletopUI.label("", 14)
 	controls.add_child(selection_label)
 	feedback = TabletopUI.label("", 13)
-	feedback.modulate = Color("f7c66b")
+	feedback.modulate = layout.accent_color
 	controls.add_child(feedback)
 
 func render(observation: Dictionary, legal: Array[Dictionary]) -> void:
@@ -268,6 +279,8 @@ func render(observation: Dictionary, legal: Array[Dictionary]) -> void:
 	hand.client_token = frame_token
 	settlement.visible = bool(TabletopBinding.read(layout.settlement_when, _context))
 	_action_row.visible = not settlement.visible
+	status.visible = not settlement.visible
+	detail.visible = not settlement.visible
 	if settlement.visible:
 		result_title.text = status.text
 		result_detail.text = detail.text
@@ -576,7 +589,10 @@ func _show_event_feedback(events: Array) -> void:
 
 func _build_settlement() -> void:
 	settlement = PanelContainer.new()
-	settlement.add_theme_stylebox_override("panel", TabletopUI.panel(Color("183740"), 20))
+	if layout.ui_theme == null:
+		settlement.add_theme_stylebox_override("panel", TabletopUI.panel(layout.table_color, 20))
+	else:
+		settlement.theme_type_variation = &"TabletopSettlement"
 	settlement.z_index = 240
 	settlement.visible = false
 	add_child(settlement)
@@ -584,6 +600,7 @@ func _build_settlement() -> void:
 	content.add_theme_constant_override("separation", 18)
 	settlement.add_child(content)
 	result_title = TabletopUI.label("", 27)
+	result_title.modulate = layout.accent_color
 	result_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	content.add_child(result_title)
 	result_detail = TabletopUI.label("", 16)
@@ -593,7 +610,8 @@ func _build_settlement() -> void:
 	var buttons := HBoxContainer.new()
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	content.add_child(buttons)
-	TabletopUI.button(buttons, "New round", func() -> void: lifecycle_requested.emit("new_round", frame_token))
+	var retry := TabletopUI.button(buttons, "New round", func() -> void: lifecycle_requested.emit("new_round", frame_token))
+	retry.theme_type_variation = &"TabletopPrimaryButton"
 	TabletopUI.button(buttons, "Close table", func() -> void: lifecycle_requested.emit("close", frame_token))
 	_place_settlement.call_deferred()
 

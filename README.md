@@ -21,7 +21,9 @@ A Godot 4 local client engine for multiple card and board games. **DouDiZhu and 
 
 Chess, Xiangqi, and additional card games need their own rule adapters and views. The common client contract does not assume cards or a landlord. The current board template supports placement; chess-style select-piece/move interactions require a separate component. See [how to add a game](docs/CLIENT_ENGINE.md).
 
-![DouDiZhu local client](docs/images/client-doudizhu.png)
+DouDiZhu opens with the [Bamboo Court theme](games/doudizhu/assets/bamboo_court/README.md), with a jade table, illustrated seat portraits, standard suit pips and event-driven music and effects.
+
+![DouDiZhu Bamboo Court](docs/images/client-doudizhu.png)
 ![Gomoku local client](docs/images/client-gomoku.png)
 
 ## Interaction baseline
@@ -46,7 +48,7 @@ Open `project.godot` with Godot 4.6-stable and press F5.
 
 Ctrl/Cmd+Z undoes, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y redoes, Ctrl/Cmd+S saves, and Ctrl/Cmd+O opens a replay.
 
-This is local hotseat: pass the device between players. Replay archives contain the seed and all private hands; keep them separate from player observations. `S/H/C/D` on cards mean spades/hearts/clubs/diamonds; `SJ/BJ` are the small/big jokers.
+This is local hotseat: pass the device between players. Replay archives contain the seed and all private hands; keep them separate from player observations. `S/H/C/D` in text summaries mean spades/hearts/clubs/diamonds. `SJ/BJ` are the small/big jokers.
 
 ## Downloadable development clients
 

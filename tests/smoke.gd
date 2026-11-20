@@ -35,6 +35,15 @@ func _run() -> void:
 	_check(view.hand.cards_node.get_child(0).card_info.face_texture.get_width() > 0, "Configured card artwork imported, including in PCK")
 	_check(view.configuration.media.cues.size() > 0 and view.configuration.media.cues[0].stream.get_length() > 0, "Configured audio imported, including in PCK")
 	_check(view.configuration.media.card_back.get_width() > 0, "Opponent/deck artwork is present in PCK")
+	var theme: Theme = view.layout.ui_theme
+	_check(view.surface.cover_texture and view.surface.texture.get_width() == 1280,
+			"The real table uses the imported artwork without stretching it")
+	_check(view.action_buttons.bid_3.get_theme_stylebox(&"normal") == theme.get_stylebox(&"normal", &"TabletopPrimaryButton"),
+			"Primary action receives the configured table style")
+	_check(view.layout.media.portraits.size() == 3 and view.layout.media.portraits["2"].get_width() == 192,
+			"All three portraits are available from the atlas")
+	_check(view.hand.cards_node.get_child(0).card_info.pip in ["spade", "heart", "club", "diamond"],
+			"Configured card identities map to native suit marks")
 	_check(view.configuration.media.background_music.loop_mode == AudioStreamWAV.LOOP_FORWARD, "Background loop import survives packing")
 	view.activate("bid_3")
 	await _frames()

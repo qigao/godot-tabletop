@@ -9,6 +9,8 @@ extends Resource
 @export var background_music: AudioStream
 @export var music_volume_db := -24.0
 @export var card_artwork: Dictionary = {}
+## Optional card symbol to pip shape mapping (heart, diamond, club, spade).
+@export var suit_pips: Dictionary = {}
 @export var cards: Dictionary = {}
 @export var pieces: Dictionary = {}
 @export var cues: Array[TabletopAudioCue] = []

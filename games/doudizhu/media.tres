@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="TabletopMediaPack" format=3]
 
-[ext_resource type="AudioStream" path="res://assets/audio/table-music.wav" id="1_ya380"]
-[ext_resource type="Texture2D" path="res://games/doudizhu/assets/card-back.svg" id="3_4vsvm"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/bamboo_court/table-music.wav" id="1_ya380"]
+[ext_resource type="Texture2D" path="res://games/doudizhu/assets/bamboo_court/card-back.webp" id="3_4vsvm"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/single.wav" id="16_prbj7"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/pair.wav" id="17_3uw1x"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/triple.wav" id="18_nlk7p"]
@@ -16,7 +16,7 @@
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/four_two_pair.wav" id="27_g1avd"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/one-left.wav" id="28_itpmv"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/two-left.wav" id="29_ryt3n"]
-[ext_resource type="AudioStream" path="res://assets/audio/tension-music.wav" id="30_seny3"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/bamboo_court/tension-music.wav" id="30_seny3"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-0.wav" id="audio_0"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-1.wav" id="audio_1"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bid-2.wav" id="audio_2"]
@@ -25,13 +25,37 @@
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/finished.wav" id="audio_5"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/bomb.wav" id="audio_6"]
 [ext_resource type="AudioStream" path="res://games/doudizhu/assets/voice/rocket.wav" id="audio_7"]
-[ext_resource type="AudioStream" path="res://assets/audio/card.wav" id="audio_8"]
-[ext_resource type="AudioStream" path="res://assets/audio/deal.wav" id="audio_9"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/bamboo_court/paper.wav" id="audio_8"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/bamboo_court/deal.wav" id="audio_9"]
+[ext_resource type="AudioStream" path="res://games/doudizhu/assets/bamboo_court/settlement.wav" id="audio_settlement"]
 [ext_resource type="Script" path="res://client/presentation/audio_cue.gd" id="cue"]
 [ext_resource type="Texture2D" path="res://games/doudizhu/assets/card-face.svg" id="face"]
 [ext_resource type="Texture2D" path="res://games/doudizhu/assets/joker.svg" id="joker"]
 [ext_resource type="Script" path="res://client/presentation/media_pack.gd" id="layout"]
-[ext_resource type="Texture2D" path="res://games/doudizhu/assets/table.svg" id="table"]
+[ext_resource type="Texture2D" path="res://games/doudizhu/assets/bamboo_court/felt.webp" id="table"]
+[ext_resource type="Texture2D" path="res://games/doudizhu/assets/bamboo_court/portraits.webp" id="portraits"]
+
+[sub_resource type="AtlasTexture" id="portrait_0"]
+atlas = ExtResource("portraits")
+region = Rect2(0, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="portrait_1"]
+atlas = ExtResource("portraits")
+region = Rect2(192, 0, 192, 192)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="portrait_2"]
+atlas = ExtResource("portraits")
+region = Rect2(0, 192, 192, 192)
+filter_clip = true
+
+[sub_resource type="Resource" id="cue_settlement"]
+script = ExtResource("cue")
+id = "settlement_chime"
+event_type = "finished"
+stream = ExtResource("audio_settlement")
+volume_db = -12.0
 
 [sub_resource type="Resource" id="cue_0"]
 script = ExtResource("cue")
@@ -290,7 +314,7 @@ fields = {
 }
 stream = ExtResource("30_seny3")
 channel = "music"
-volume_db = -24.0
+volume_db = -19.0
 
 [sub_resource type="Resource" id="Resource_h107d"]
 script = ExtResource("cue")
@@ -301,7 +325,7 @@ fields = {
 }
 stream = ExtResource("30_seny3")
 channel = "music"
-volume_db = -24.0
+volume_db = -19.0
 
 [resource]
 script = ExtResource("layout")
@@ -309,6 +333,18 @@ table_texture = ExtResource("table")
 card_face = ExtResource("face")
 card_back = ExtResource("3_4vsvm")
 background_music = ExtResource("1_ya380")
+music_volume_db = -19.0
+portraits = {
+"0": SubResource("portrait_0"),
+"1": SubResource("portrait_1"),
+"2": SubResource("portrait_2")
+}
+suit_pips = {
+"C": "club",
+"D": "diamond",
+"H": "heart",
+"S": "spade"
+}
 card_artwork = {
 "52": ExtResource("joker"),
 "53": ExtResource("joker")
@@ -693,4 +729,4 @@ cards = {
 "title": "5"
 }
 }
-cues = Array[ExtResource("cue")]([SubResource("cue_0"), SubResource("cue_1"), SubResource("cue_2"), SubResource("cue_3"), SubResource("cue_4"), SubResource("cue_5"), SubResource("cue_6"), SubResource("cue_7"), SubResource("cue_8"), SubResource("cue_9"), SubResource("Resource_3mqkx"), SubResource("Resource_nnxv8"), SubResource("Resource_wpplw"), SubResource("Resource_r7oa6"), SubResource("Resource_q6ju8"), SubResource("Resource_wx4gv"), SubResource("Resource_ts8yw"), SubResource("Resource_grk2f"), SubResource("Resource_4ook6"), SubResource("Resource_ibucy"), SubResource("Resource_ldvwe"), SubResource("Resource_cm80f"), SubResource("Resource_1vdco"), SubResource("Resource_4mh2s"), SubResource("Resource_dn0oa"), SubResource("Resource_h107d")])
+cues = Array[ExtResource("cue")]([SubResource("cue_settlement"), SubResource("cue_0"), SubResource("cue_1"), SubResource("cue_2"), SubResource("cue_3"), SubResource("cue_4"), SubResource("cue_5"), SubResource("cue_6"), SubResource("cue_7"), SubResource("cue_8"), SubResource("cue_9"), SubResource("Resource_3mqkx"), SubResource("Resource_nnxv8"), SubResource("Resource_wpplw"), SubResource("Resource_r7oa6"), SubResource("Resource_q6ju8"), SubResource("Resource_wx4gv"), SubResource("Resource_ts8yw"), SubResource("Resource_grk2f"), SubResource("Resource_4ook6"), SubResource("Resource_ibucy"), SubResource("Resource_ldvwe"), SubResource("Resource_cm80f"), SubResource("Resource_1vdco"), SubResource("Resource_4mh2s"), SubResource("Resource_dn0oa"), SubResource("Resource_h107d")])
