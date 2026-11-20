@@ -4,6 +4,7 @@ extends Control
 
 var message := ""
 var tint := Color("f7c66b")
+var fill_color := Color("142d37")
 var burst := false
 var progress := 0.0
 var _tween: Tween
@@ -37,6 +38,6 @@ func _draw() -> void:
 			var direction := Vector2.from_angle(TAU * i / 16)
 			draw_line(center + direction * (25 + progress * 35), center + direction * (55 + progress * 65), tint, 3, true)
 	var box := Rect2(center - Vector2(180, 28), Vector2(360, 56))
-	draw_style_box(TabletopUI.panel(Color("142d37"), 14), box)
+	draw_style_box(TabletopUI.panel(fill_color, 14), box)
 	var width := ThemeDB.fallback_font.get_string_size(message, HORIZONTAL_ALIGNMENT_LEFT, -1, 24).x
 	draw_string(ThemeDB.fallback_font, center + Vector2(-width / 2, 9), message, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, tint)

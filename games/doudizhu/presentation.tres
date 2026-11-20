@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://client/presentation/card_motion.gd" id="3_dem5b"]
 [ext_resource type="Script" path="res://client/presentation/card_table_layout.gd" id="layout"]
 [ext_resource type="Resource" path="res://games/doudizhu/media.tres" id="media"]
+[ext_resource type="Theme" path="res://games/doudizhu/assets/bamboo_court/table_theme.tres" id="theme"]
 
 [sub_resource type="Resource" id="Resource_abmju"]
 script = ExtResource("1_x0hsb")
@@ -18,8 +19,11 @@ deal_interval = 0.018
 script = ExtResource("layout")
 sections = PackedStringArray("table", "hand", "actions", "help")
 seat_order = PackedInt32Array(0, 1, 2)
-table_color = Color(0.067, 0.18, 0.21, 1)
-accent_color = Color(0.97, 0.78, 0.42, 1)
+table_color = Color(0.06, 0.21, 0.14, 1)
+accent_color = Color(0.93, 0.78, 0.52, 1)
+ui_theme = ExtResource("theme")
+cover_table_texture = true
+center_actions = true
 hand_binding = {
 "at": [{
 "get": "observation.hands"
@@ -221,6 +225,7 @@ actions = Array[Dictionary]([{
 },
 "id": "bid_3",
 "label": "Bid 3",
+"primary": true,
 "selection_field": "",
 "when": {
 "eq": [{
@@ -234,6 +239,7 @@ actions = Array[Dictionary]([{
 },
 "id": "play",
 "label": "Play selected",
+"primary": true,
 "selection_field": "cards",
 "when": {
 "eq": [{

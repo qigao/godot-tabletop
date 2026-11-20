@@ -52,7 +52,7 @@ An interruption invalidates the old UI token, cancels gestures and transient mot
 
 - `client/presentation/card_interaction.gd`: selection/hover parameters, pointer threshold, sweep/drop toggles, drop action, keyboard range and clear behavior.
 - `client/presentation/card_motion.gd`: deal/play/reveal, event feedback and result timing.
-- `games/doudizhu/presentation.tres`: seat anchors, public zones, role/count bindings, timeout policy, motion event targets, visual callouts and result condition.
+- `games/doudizhu/presentation.tres`: seat anchors, public zones, role/count bindings, timeout policy, motion event targets, visual callouts, result condition and table theme.
 - `games/doudizhu/media.tres`: replaceable faces/backs/portraits, pattern/low-card narration, effects and background music changes.
 
 The card renderer has no imports from DouDiZhu rules and no branches on individual game command/event identifiers. The host receives generic command/lifecycle requests. A placement board remains a separate component; it does not inherit the card gesture state machine.
@@ -63,6 +63,6 @@ The card renderer has no imports from DouDiZhu rules and no branches on individu
 
 `tests/interruptions.gd` additionally checks rapid input with motion enabled, touch ownership, modal/application/window suspension, remaining-time resume, stale leases, explicit pause/history/import preservation, replay snapshot writes after table closure, and board input recovery. It runs against source and PCK. Injected Godot window signals/application notifications do not establish physical OS focus behavior; that remains #2.
 
-Linux native OpenGL acceptance captures desktop, compact card/board and settlement layouts. `client-interactions.gif` is assembled from actual rendered deal, hover, selection and drag/drop frames; it is not a generated mockup. CI uploads the motion/layout captures alongside each platform's runnable client.
+Linux native OpenGL acceptance captures the Bamboo Court desktop, compact card/board and settlement layouts. `client-interactions.gif` shows the rendered deal, hover, selection and drag/drop frames. CI uploads the motion/layout captures alongside each platform's runnable client.
 
 These checks establish the implemented routes and rendered behavior. Physical mouse/touch devices, speaker quality, DPI/OS focus behavior and production art/narration remain [#2](https://github.com/qigao/godot-tabletop/issues/2). Test totals and a successful replay do not by themselves establish subjective usability or device acceptance. Remote rooms and AI remain deferred.

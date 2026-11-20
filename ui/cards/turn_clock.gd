@@ -8,6 +8,8 @@ var running := false
 var suspended := false
 var token := 0
 var total := 60.0
+var accent_color := Color("e8cb8f")
+var fill_color := Color("0b2029")
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -30,10 +32,11 @@ func _process(delta: float) -> void:
 		expired.emit(token)
 
 func _draw() -> void:
-	var color := Color("eb775e") if remaining <= 10 else Color("e8cb8f")
+	var color := Color("eb775e") if remaining <= 10 else accent_color
 	if not running:
 		color = Color("8196a0")
-	draw_circle(Vector2(30, 30), 27, Color("0b2029"))
+	draw_circle(Vector2(30, 30), 27, fill_color)
+	draw_arc(Vector2(30, 30), 27, 0, TAU, 48, Color(accent_color, 0.26), 3, true)
 	draw_arc(Vector2(30, 30), 27, -PI / 2, -PI / 2 + TAU * remaining / maxf(1, total), 48, color, 3, true)
 	var text := str(ceili(remaining))
 	var width := ThemeDB.fallback_font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x
