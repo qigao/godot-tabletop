@@ -4,7 +4,10 @@ import subprocess
 import sys
 
 root = Path(__file__).resolve().parents[1]
-captures = ["client-doudizhu.png", "client-gomoku.png", "client-compact.png", "client-doudizhu-compact.png", "client-doudizhu-result.png"]
+captures = [
+    "client-doudizhu.png", "client-doudizhu-compact.png", "client-doudizhu-result.png",
+    "client-gomoku.png", "client-compact.png", "client-xiangqi.png", "client-xiangqi-compact.png",
+]
 for file in (root / "build/interaction-frames").glob("*.png"):
     file.unlink()
 for file in (root / "docs/images").glob("client-*.png"):

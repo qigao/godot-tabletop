@@ -31,6 +31,7 @@ DouDiZhu/Gomoku rules, the session/replay and local client layers, presentation 
 
 ## Demonstration media
 
+- Xiangqi uses a renamed 16-glyph subset of Noto Serif CJK SC Bold 2.003 for pieces and river labels. The bundled font retains the Adobe copyright and the [SIL Open Font License 1.1](licenses/TABLETOP_BOARD_SERIF_OFL.txt). The subset was made with fontTools from the Simplified Chinese face of the [upstream release](https://github.com/notofonts/noto-cjk/releases/tag/Serif2.003).
 - The table, card-face, joker and stone SVGs are original code-native assets created for this repository. Card/deal/stone WAV effects and the looping background tracks are original synthesized audio.
 - Bamboo Court uses original generated felt, portraits and card-back illustrations, with locally synthesized music and effects. The asset descriptions, artwork prompts and audio generator are recorded in [the theme folder](games/doudizhu/assets/bamboo_court/README.md).
 - The example speech WAVs under `games/doudizhu/assets/voice/` were generated locally with eSpeak NG 1.51 using the phrases and command documented in that directory. They are replaceable demonstration speech, not recorded third-party game audio or final production narration. No synthesizer source, executable, voice data, model weights or external recording is bundled.

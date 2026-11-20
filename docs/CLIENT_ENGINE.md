@@ -28,10 +28,11 @@ Card tables and boards share the local session/workspace host. They have differe
 | --- | --- | --- | --- |
 | Card table | `TabletopCardTableLayout` | `ui/cards/card_table_view.tscn` | DouDiZhu |
 | Placement board | `TabletopBoardLayout` | `ui/boards/placement_board_view.tscn` | Gomoku |
+| Move board | `TabletopMoveBoardLayout` | `ui/boards/move_board_view.tscn` | Xiangqi |
 
-The host has no branches on these families or on individual games. Its module descriptor supplies `rules_script`, `view_scene`, and `presentation`. Both reference games use a family renderer, with no individual game view script.
+The host mounts each game from the module descriptor's `rules_script`, `view_scene` and `presentation`. The registered games use shared scenes.
 
-This is a component template system, not automatic layout inference from rules. A developer supplies rules + layout/interaction configuration + media + one catalog entry. New interactions, such as chess piece selection followed by a destination, need an additional board component/view; the placement template does not claim that behavior.
+To add a game, supply rules, layout and media resources, and a catalog entry. The two board views share `TabletopGridBoardView` and `TabletopBoardCanvas`. Placement submits a cell. The move view indexes legal commands by origin and destination, then displays those destinations when a piece is selected. A separate choice control is needed for games offering multiple moves between the same intersections, such as promotion choices.
 
 ## DouDiZhu: complete configured example
 
@@ -100,4 +101,4 @@ Exercise real legal/illegal transitions, rejection atomicity, terminal outcomes,
 
 The current suites include three complete DouDiZhu matches played through configured controls, a second string-card engine using the same renderer, media cue routing/suppression, real viewport gesture/motion/clock/result scenarios (also run against PCK), and a full 225-move Gomoku draw, two engine types in one workspace, two simultaneous card views, real Godot mouse/touch/key event paths, stale queued input, save/load, resize and teardown. Packaging reruns the actual scene suite from the generated PCK. Linux OpenGL captures verify the actual scenes at desktop and compact sizes.
 
-Physical mouse/touch devices, DPI/OS behavior and signed/mobile/web distribution require their own acceptance in [#2](https://github.com/qigao/godot-tabletop/issues/2). For manual acceptance, create both games, play legal and rejected moves, review/branch/save/load, switch a hovered card hand to the board, resize, pause/resume, close all tables and create again. Touch must activate toolbar controls and each game move exactly once. Automated injection does not close that physical-device task.
+Physical mouse/touch devices, DPI/OS behavior and signed/mobile/web distribution are tracked in [#2](https://github.com/qigao/godot-tabletop/issues/2). For manual acceptance, create tables of each game, play legal and rejected moves, review/branch/save/load, switch from a hovered hand or selected piece, resize, pause/resume, close tables and create again. Each completed touch should activate a toolbar control or game action once.

@@ -1,0 +1,102 @@
+[gd_resource type="Resource" script_class="TabletopMediaPack" format=3]
+
+[ext_resource type="Script" path="res://client/presentation/media_pack.gd" id="media"]
+[ext_resource type="Script" path="res://client/presentation/audio_cue.gd" id="cue"]
+[ext_resource type="AudioStream" path="res://assets/audio/stone.wav" id="stone"]
+
+[sub_resource type="Resource" id="move"]
+script = ExtResource("cue")
+id = "piece"
+event_type = "moved"
+stream = ExtResource("stone")
+volume_db = -8.0
+
+[resource]
+script = ExtResource("media")
+pieces = {
+"1": {
+"fill": Color(0.989, 0.892, 0.74, 1),
+"mode": "disc",
+"outline": Color(0.57, 0.147, 0.117, 1),
+"text": "帥"
+},
+"2": {
+"fill": Color(0.989, 0.892, 0.74, 1),
+"mode": "disc",
+"outline": Color(0.57, 0.147, 0.117, 1),
+"text": "仕"
+},
+"3": {
+"fill": Color(0.989, 0.892, 0.74, 1),
+"mode": "disc",
+"outline": Color(0.57, 0.147, 0.117, 1),
+"text": "相"
+},
+"4": {
+"fill": Color(0.989, 0.892, 0.74, 1),
+"mode": "disc",
+"outline": Color(0.57, 0.147, 0.117, 1),
+"text": "馬"
+},
+"5": {
+"fill": Color(0.989, 0.892, 0.74, 1),
+"mode": "disc",
+"outline": Color(0.57, 0.147, 0.117, 1),
+"text": "車"
+},
+"6": {
+"fill": Color(0.989, 0.892, 0.74, 1),
+"mode": "disc",
+"outline": Color(0.57, 0.147, 0.117, 1),
+"text": "炮"
+},
+"7": {
+"fill": Color(0.989, 0.892, 0.74, 1),
+"mode": "disc",
+"outline": Color(0.57, 0.147, 0.117, 1),
+"text": "兵"
+},
+"-1": {
+"fill": Color(0.962, 0.916, 0.805, 1),
+"mode": "disc",
+"outline": Color(0.11, 0.16, 0.145, 1),
+"text": "將"
+},
+"-2": {
+"fill": Color(0.962, 0.916, 0.805, 1),
+"mode": "disc",
+"outline": Color(0.11, 0.16, 0.145, 1),
+"text": "士"
+},
+"-3": {
+"fill": Color(0.962, 0.916, 0.805, 1),
+"mode": "disc",
+"outline": Color(0.11, 0.16, 0.145, 1),
+"text": "象"
+},
+"-4": {
+"fill": Color(0.962, 0.916, 0.805, 1),
+"mode": "disc",
+"outline": Color(0.11, 0.16, 0.145, 1),
+"text": "馬"
+},
+"-5": {
+"fill": Color(0.962, 0.916, 0.805, 1),
+"mode": "disc",
+"outline": Color(0.11, 0.16, 0.145, 1),
+"text": "車"
+},
+"-6": {
+"fill": Color(0.962, 0.916, 0.805, 1),
+"mode": "disc",
+"outline": Color(0.11, 0.16, 0.145, 1),
+"text": "砲"
+},
+"-7": {
+"fill": Color(0.962, 0.916, 0.805, 1),
+"mode": "disc",
+"outline": Color(0.11, 0.16, 0.145, 1),
+"text": "卒"
+}
+}
+cues = Array[ExtResource("cue")]([SubResource("move")])

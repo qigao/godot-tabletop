@@ -4,6 +4,7 @@ extends RefCounted
 const MODULES = {
 	"doudizhu": preload("res://games/doudizhu/module.tres"),
 	"gomoku": preload("res://games/gomoku/module.tres"),
+	"xiangqi": preload("res://games/xiangqi/module.tres"),
 }
 
 static func games() -> Array[Dictionary]:

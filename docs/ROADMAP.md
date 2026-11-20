@@ -14,6 +14,7 @@ The user requested completion of the reusable local client before remote rooms o
 - [x] Monotonic UI tokens reject stale/detached commands after lifecycle changes.
 - [x] Per-view card managers/input scopes, generic card metadata, separate board/piece widget.
 - [x] Playable 15 × 15 freestyle Gomoku using the same module/session/client contracts.
+- [x] Playable Xiangqi with a configured move board, checkmate, stalemate and local repetition results.
 - [x] Rule, workspace, scene, simulated mouse/touch/key, resize and lifecycle acceptance.
 - [x] Real local OpenGL layout captures at 1280 × 800 and 800 × 600.
 - [x] Runnable development client packaging with PCK scene acceptance; three-platform CI publishes bundles.
@@ -23,14 +24,14 @@ The exact implementation commit and three-platform CI result are recorded in the
 
 ## Configured presentation ([#9](https://github.com/qigao/godot-tabletop/issues/9))
 
-- [x] Separate card-table and placement-board resource schemas and renderers.
+- [x] Separate card-table and board resource schemas, with placement and move interactions for grids.
 - [x] Declarative observation/seat/selection bindings and legal-action-driven controls.
-- [x] DouDiZhu and Gomoku converted to configuration without individual game view scripts.
+- [x] DouDiZhu, Gomoku and Xiangqi use shared views through module descriptors.
 - [x] Replaceable card/table/piece images and event-driven local voice/effect streams.
 - [x] Per-view cue ownership, mute, cancellation and silent history/import/switch behavior.
 - [x] Three complete configured DouDiZhu games, second string-card engine reuse and imported-asset acceptance.
 
-This covers the current components. New chess-style piece/move interactions require a separate board component; a rules script cannot infer layout. Physical speaker/input and production voice/art quality remain device/product acceptance. Exact-HEAD three-platform results are recorded in the PR and issue.
+Developers provide layout and media for each rules profile. Physical speaker/input and production voice/art quality remain device/product acceptance. Exact-HEAD three-platform results are recorded in the PR and issue.
 
 ## Required interaction baseline ([#11](https://github.com/qigao/godot-tabletop/issues/11))
 
@@ -55,12 +56,13 @@ Exact implementation/three-platform evidence is recorded in #11 and its PR. Phys
 - Bounded exhaustive subset comparisons for the legal action generator.
 - 935 pinned upstream action outputs, six explicit rule-profile exclusions, stable IDs and revision-checked dispatch.
 - Gomoku horizontal/vertical/diagonal and edge wins, overline behavior, no row wrapping, a full 225-move draw, and JSON replay.
+- Xiangqi opening counts, seven piece kinds, checkmate/stalemate, local repetition and a replayable viewport draw.
 
 These are deterministic acceptance drivers. They do not implement a production opponent or prove trained-agent strength.
 
 ## Additional games
 
-Chess/Xiangqi and further card games get their own rules/profile and view adapters through the current descriptor contract. A chess move is an engine-specific command, not a new host code path. Each game needs its own real outcome/replay/interaction acceptance.
+Further chess and card games register their own rules and component resources. Each game needs its own outcome, replay and interaction acceptance. Xiangqi's first profile covers casual local play. Tournament adjudication is a distinct rules profile.
 
 ## Deferred: trained inference ([#3](https://github.com/qigao/godot-tabletop/issues/3))
 

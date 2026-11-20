@@ -2,7 +2,7 @@
 
 ## Local client first
 
-The current deliverable is a Godot 4 client engine for local card and board games. Remote room authority and model inference are deferred. DouDiZhu and Gomoku are the concrete integrations; the grid fixture only tests the lower-level rules contract.
+The current deliverable is a Godot 4 client engine for local card and board games. DouDiZhu, Gomoku and Xiangqi are playable integrations. The grid fixture exercises the lower-level rules contract. Remote room authority and model inference are deferred.
 
 | Layer | Owns | Does not decide |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ The current deliverable is a Godot 4 client engine for local card and board game
 
 `TabletopSession.submit(seat, command, expected_revision)` rejects stale revisions before applying a command. Success commits once, advances the revision, records a detached command, and emits public events. Each match owns a different session. No autoload singleton owns live state.
 
-`legal_actions(seat)` returns `{id, command}` entries. `submit_action(seat, id, expected_revision)` resolves an available ID through the same validator. Unknown, unavailable, or stale actions leave the match unchanged. DouDiZhu uses rank-multiset IDs and canonical owned physical cards; Gomoku uses `place:<cell>`. Other engines may define commands such as `{type: "move", from: 12, to: 28}` without changing the client host.
+`legal_actions(seat)` returns `{id, command}` entries. `submit_action(seat, id, expected_revision)` resolves an available ID through the same validator. Unknown, unavailable, or stale actions leave the match unchanged. DouDiZhu uses rank-multiset IDs and canonical owned physical cards. Gomoku uses `place:<cell>`. Xiangqi uses `move:<from>:<to>`.
 
 Observations contain only what that seat may see. The current local host presents the active seat's observation. It does not implement simultaneous remote players, spectators, or authenticated seats.
 
@@ -34,7 +34,7 @@ Pause blocks gameplay commands and displays an overlay. Review and common lifecy
 
 ## Presentation and input
 
-A module descriptor pairs the rules adapter with a `TabletopGameView` scene and typed presentation resource. Card-table and placement-board renderers/configurations are separate families. DouDiZhu and Gomoku use those shared scenes without individual game view scripts. Declarative value bindings translate observations into labels, hands and pieces, while legal actions enable configured controls. The catalog registers descriptors; the host mounts them without game/family branches. New interactions need a new component rather than rule-specific conditionals in the host. See CLIENT_ENGINE.md for the exact configuration boundary.
+A module descriptor pairs the rules adapter with a `TabletopGameView` scene and typed presentation resource. Card tables use the hand renderer. Placement and move boards share an intersection canvas and each define their own input behavior. Declarative value bindings translate observations into labels, hands and pieces. The legal-action list supplies available controls and destinations. The same host mounts all registered views. See [client integration](CLIENT_ENGINE.md).
 
 The card integration extends the pinned Card Framework outside its source tree. Each rendered card table owns an explicit manager and `TabletopInputScope`; it does not register a manager in root-scene metadata. The local hover scope chooses the hovered card, while adapter cleanup balances upstream static counters. Two live card views are exercised together and destroying one leaves the other's scope intact. Visual drag/drop cannot transfer cards around the rules authority.
 

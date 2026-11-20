@@ -10,6 +10,7 @@ checks = [
     ("rules", ["--script", "res://tests/run.gd"]),
     ("legal actions", ["--script", "res://tests/legal_actions.gd"]),
     ("client engine", ["--script", "res://tests/client.gd"]),
+    ("Xiangqi rules and board input", ["--script", "res://tests/xiangqi.gd"]),
     ("configured presentation", ["--script", "res://tests/presentation.gd"]),
     ("interaction UX", ["--script", "res://tests/interaction.gd"]),
     ("client interruptions", ["--script", "res://tests/interruptions.gd"]),

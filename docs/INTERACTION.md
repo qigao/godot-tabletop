@@ -40,6 +40,12 @@ On expiry, the configured priority list tries only currently visible, enabled le
 
 Settlement blocks hand/gameplay actions and shows the actual bound outcome/scores. **New round** asks the host to reset the current table with the next seed; **Close table** asks it to close that table. Both requests use the frame token. A stale result panel cannot restart or close a newer match. Common history controls remain available for review.
 
+## Move board
+
+In Xiangqi, click or tap a piece, then one of its marked destinations. Dots show empty destinations and rings show captures. Arrows navigate intersections and Enter or Space activates the focused intersection. Click the selected piece, right-click or press Escape to clear the selection. The previous move marks both endpoints and check highlights the threatened general.
+
+The view indexes the frame's legal commands. Selection and invalid clicks leave the current move and history intact. Accepted moves, pauses, dialogs, review and switches invalidate the selection. A finished position displays its outcome and keeps the common replay controls available.
+
 ## Dialogs and application focus
 
 Save/load dialogs, main-window focus loss and application focus loss suspend the mounted view. These sources compose: closing a dialog cannot resume an application that remains in the background, and returning focus cannot bypass an open dialog. This is presentation suspension; it does not change the user's **Pause** setting or the rules/history.

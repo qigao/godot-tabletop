@@ -98,6 +98,23 @@ func _run() -> void:
 	root.size = Vector2i(800, 600)
 	await create_timer(0.2).timeout
 	await _save("client-compact.png")
+	root.size = Vector2i(1280, 800)
+	for index in range(app.game_picker.item_count):
+		if app.game_picker.get_item_metadata(index) == "xiangqi":
+			app.game_picker.select(index)
+	app._new_table()
+	await create_timer(0.2).timeout
+	var chess := app.current_view as TabletopMoveBoardView
+	for cell in [54, 45, 27, 36, 64]:
+		var intersection := chess.board.get_global_transform_with_canvas() * chess.board.cell_position(cell)
+		_mouse(intersection, true)
+		_mouse(intersection, false)
+		await create_timer(0.14).timeout
+	assert(chess.board.selected_cell == 64 and chess.board.move_targets.has(1))
+	await _save("client-xiangqi.png")
+	root.size = Vector2i(800, 600)
+	await create_timer(0.2).timeout
+	await _save("client-xiangqi-compact.png")
 	app.queue_free()
 	await process_frame
 	quit()
