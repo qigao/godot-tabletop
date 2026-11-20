@@ -53,9 +53,12 @@ This is local hotseat: pass the device between players. Replay archives contain 
 
 ## Downloadable development clients
 
-Successful [Godot workflow runs](https://github.com/qigao/godot-tabletop/actions/workflows/godot.yml) publish `Tabletop-Linux`, `Tabletop-Windows`, and `Tabletop-macOS` artifacts. Download and extract the artifact, then extract the enclosed client ZIP and run `RunTabletop.sh`, `RunTabletop.cmd`, or `RunTabletop.command`.
+Successful [Godot workflow runs](https://github.com/qigao/godot-tabletop/actions/workflows/godot.yml) publish `Tabletop-Linux`, `Tabletop-Windows`, and `Tabletop-macOS` artifacts. Download and extract the artifact, then extract its client ZIP.
 
-Each bundle includes the project PCK and the verified official standard Godot runtime. It uses the editor-capable runtime; it is a development client rather than a stripped release export. The scene and real viewport interaction suites also run against the PCK before packaging. Signed desktop distribution, browser/mobile exports, and physical touchscreen acceptance remain separate work in [#2](https://github.com/qigao/godot-tabletop/issues/2).
+- On Windows x64, double-click `Tabletop.exe`. The unsigned export contains the Godot 4.6 release runtime and the game pack in the executable. CI starts the exported executable directly.
+- On Linux x64 or macOS, open `RunTabletop.sh` or `RunTabletop.command`. These development bundles include `client.pck` and the editor-capable runtime.
+
+The scene and viewport interaction suites run from an exported PCK before packaging on all three platforms. Signed desktop distribution, browser/mobile exports and physical touchscreen acceptance are tracked in [#2](https://github.com/qigao/godot-tabletop/issues/2).
 
 ## Check
 
