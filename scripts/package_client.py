@@ -26,6 +26,7 @@ run(["--headless", "--path", str(project), "--export-pack", "Client pack", str(p
 run(["--headless", "--main-pack", str(pack), "--script", str(project / "tests/smoke.gd")])
 run(["--headless", "--main-pack", str(pack), "--script", str(project / "tests/interaction.gd")])
 run(["--headless", "--main-pack", str(pack), "--script", str(project / "tests/interruptions.gd")])
+run(["--headless", "--main-pack", str(pack), "--script", str(project / "tests/xiangqi.gd")])
 
 with tempfile.TemporaryDirectory(prefix="tabletop-client-") as directory:
     stage = Path(directory)
@@ -36,6 +37,7 @@ with tempfile.TemporaryDirectory(prefix="tabletop-client-") as directory:
     shutil.copy2(project / "addons/card-framework/LICENSE", stage / "CARD_FRAMEWORK_LICENSE")
     shutil.copy2(project / "licenses/GODOT_LICENSE.txt", stage / "GODOT_LICENSE.txt")
     shutil.copy2(project / "licenses/GODOT_COPYRIGHT.txt", stage / "GODOT_COPYRIGHT.txt")
+    shutil.copy2(project / "licenses/TABLETOP_BOARD_SERIF_OFL.txt", stage / "TABLETOP_BOARD_SERIF_OFL.txt")
     relative = godot.relative_to(engine_dir).as_posix()
     if platform_name == "Windows":
         executable = relative.replace("_console.exe", ".exe")
@@ -50,7 +52,7 @@ with tempfile.TemporaryDirectory(prefix="tabletop-client-") as directory:
     (stage / "START-HERE.txt").write_text(
         "Godot Tabletop local client\n\nExtract the complete archive and run " + launcher.name +
         ".\nThe official standard Godot 4.6 runtime is included.\n"
-        "Create DouDiZhu or Gomoku tables from the game picker.\n"
+        "Create DouDiZhu, Gomoku or Xiangqi tables from the game picker.\n"
         "Undo/redo, replay seek, pause, save and load work locally.\n"
         "This development client bundle uses the official editor-capable runtime.\n",
         encoding="utf-8")

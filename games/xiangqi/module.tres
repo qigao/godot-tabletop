@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TabletopGameModule" format=3]
+
+[ext_resource type="Script" path="res://client/game_module.gd" id="module"]
+[ext_resource type="Script" path="res://games/xiangqi/rules.gd" id="rules"]
+[ext_resource type="PackedScene" path="res://ui/boards/move_board_view.tscn" id="view"]
+[ext_resource type="Resource" path="res://games/xiangqi/presentation.tres" id="layout"]
+
+[resource]
+script = ExtResource("module")
+id = "xiangqi"
+title = "Xiangqi"
+kind = "board"
+seat_count = 2
+rules_script = ExtResource("rules")
+view_scene = ExtResource("view")
+presentation = ExtResource("layout")

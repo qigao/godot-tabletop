@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="TabletopMoveBoardLayout" format=3]
+
+[ext_resource type="Script" path="res://client/presentation/move_board_layout.gd" id="layout"]
+[ext_resource type="Resource" path="res://games/xiangqi/media.tres" id="media"]
+[ext_resource type="FontFile" path="res://games/xiangqi/assets/tabletop-board-serif.otf" id="font"]
+
+[resource]
+script = ExtResource("layout")
+columns = 9
+rows = 10
+empty_piece = 0
+split_after_row = 4
+split_labels = PackedStringArray("楚河", "漢界")
+guide_lines = Array[Vector2i]([Vector2i(3, 23), Vector2i(5, 21), Vector2i(66, 86), Vector2i(68, 84)])
+board_font = ExtResource("font")
+board_color = Color(0.87, 0.729, 0.524, 1)
+cells_binding = {
+"get": "observation.board"
+}
+last_origin_binding = {
+"get": "observation.last_from"
+}
+last_cell_binding = {
+"get": "observation.last_to"
+}
+checked_cell_binding = {
+"get": "observation.check_cell"
+}
+highlight_binding = {
+"literal": []
+}
+blocked_binding = {
+"eq": [{"get": "observation.phase"}, "finished"]
+}
+status_text = {
+"if": [{"eq": [{"get": "observation.phase"}, "finished"]},
+{
+"if": [{"eq": [{"get": "observation.winner"}, -1]}, "Draw",
+{"format": ["%s wins", {"at": [["Red", "Black"], {"get": "observation.winner"}]}]}]
+},
+{
+"format": ["%s to move%s",
+{"at": [["Red", "Black"], {"get": "observation.turn"}]},
+{"if": [{"eq": [{"get": "observation.check_cell"}, -1]}, "", "  /  Check"]}]
+}]
+}
+detail_text = {
+"if": [{"eq": [{"get": "observation.phase"}, "finished"]},
+{
+"format": ["%s  /  %d moves",
+{"at": [{"literal": {"checkmate": "Checkmate", "stalemate": "Stalemate", "perpetual_check": "Perpetual check", "repetition": "Threefold repetition"}}, {"get": "observation.outcome"}]},
+{"get": "observation.moves"}]
+},
+{"format": ["%d moves  /  Local hotseat", {"get": "observation.moves"}]}]
+}
+help_text = "Select a piece, then a marked destination  |  Arrows + Enter  |  Esc clears selection"
+media = ExtResource("media")
