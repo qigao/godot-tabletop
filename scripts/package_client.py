@@ -16,15 +16,29 @@ preset = "Windows player" if windows else "Client pack"
 pack = project / "exports/client.pck"
 pack.parent.mkdir(exist_ok=True)
 
-def run(arguments, executable=godot, cwd=None, log_file=None):
-    result = subprocess.run([str(executable), *arguments], cwd=cwd, stdout=subprocess.PIPE,
+def run(arguments):
+    result = subprocess.run([str(godot), *arguments], stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, text=True, encoding="utf-8")
-    log = result.stdout
-    if log_file is not None:
-        log += log_file.read_text(encoding="utf-8")
-    print(log, end="", flush=True)
-    if result.returncode or "ERROR:" in log:
+    print(result.stdout, end="", flush=True)
+    if result.returncode or "ERROR:" in result.stdout:
         raise SystemExit("Packed client acceptance failed")
+
+def check_windows_startup(executable, log_file):
+    # Verify startup while the release process is running. A forced engine quit
+    # can race the audio mixer when the opening table starts background music.
+    try:
+        result = subprocess.run(
+            [str(executable), "--headless", "--verbose", "--log-file", str(log_file)],
+            cwd=executable.parent, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, timeout=4,
+        )
+    except subprocess.TimeoutExpired:
+        log = log_file.read_text(encoding="utf-8", errors="replace")
+        if "Loading resource: res://ui/tabletop_app.gdc" not in log or "ERROR:" in log:
+            raise SystemExit("Windows client failed to start the tabletop scene\n" + log)
+    else:
+        raise SystemExit(f"Windows client exited during startup (status {result.returncode})\n"
+                         + log_file.read_text(encoding="utf-8", errors="replace"))
+    print("Standalone Windows client loaded the tabletop scene", flush=True)
 
 run(["--headless", "--path", str(project), "--export-pack", preset, str(pack)])
 # Execute the real client scenes from PCK, without the source project's resources.
@@ -40,9 +54,7 @@ with tempfile.TemporaryDirectory(prefix="tabletop-client-") as directory:
         launcher = stage / "Tabletop.exe"
         run(["--headless", "--path", str(project), "--export-release", preset, str(launcher)])
         # Start the release executable in its package directory using its embedded game.
-        startup_log = Path(directory) / "windows-startup.log"
-        run(["--headless", "--quit-after", "10", "--log-file", str(startup_log)],
-            executable=launcher, cwd=stage, log_file=startup_log)
+        check_windows_startup(launcher, Path(directory) / "windows-startup.log")
         runtime_description = "Tabletop.exe includes the Godot 4.6 release runtime and all three games."
     else:
         shutil.copytree(engine_dir, stage / "runtime")
